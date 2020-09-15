@@ -3,6 +3,7 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -68,7 +69,11 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String = when {
+    ((age / 10 == 1) || (age / 10 == 11) || (age % 10) in 5..9) -> "$age лет"
+    (age % 10 == 1) -> "$age год"
+    else -> "$age года"
+}
 
 /**
  * Простая (2 балла)
@@ -81,7 +86,11 @@ fun timeForHalfWay(
     t1: Double, v1: Double,
     t2: Double, v2: Double,
     t3: Double, v3: Double
-): Double = TODO()
+): Double = when {
+    ((v1 * t1 + v2 * t2 + v3 * t3) / 2) < (v1 * t1) -> (v1 * t1 + v2 * t2 + v3 * t3) / 2 / v1
+    ((v1 * t1 + v2 * t2 + v3 * t3) / 2) < (v1 * t1 + v2 * t2) -> t1 + ((v1 * t1 + v2 * t2 + v3 * t3) / 2 - v1 * t1) / v2
+    else -> t1 + t2 + ((v1 * t1 + v2 * t2 + v3 * t3) / 2 - v1 * t1 - v2 * t2) / v3
+}
 
 /**
  * Простая (2 балла)
@@ -96,7 +105,12 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int = TODO()
+): Int = when {
+    ((kingX == rookX1) || (kingY == rookY1)) && ((kingX == rookX2) || (kingY == rookY2)) -> 3
+    (kingX == rookX1) || (kingY == rookY1) -> 1
+    (kingX == rookX2) || (kingY == rookY2) -> 2
+    else -> 0
+}
 
 /**
  * Простая (2 балла)
@@ -132,4 +146,11 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = when {
+    (c > b) || (a > d) -> -1
+    (a == d) || (b == c) -> 0
+    (c >= a) && (b >= d) -> (d - c)
+    (d >= b) && (a >= c) -> (b - a)
+    (b > c) && (b < d) && (a < c) -> (b - c)
+    else -> (d - a)
+}
