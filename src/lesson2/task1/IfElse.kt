@@ -70,8 +70,8 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
 fun ageDescription(age: Int): String = when {
-    ((age / 10 == 1) || (age / 10 == 11) || (age % 10 in 5..9) || (age % 10 == 0)) -> "$age лет"
-    (age % 10 == 1) -> "$age год"
+    age / 10 == 1 || age / 10 == 11 || age % 10 in 5..9 || age % 10 == 0 -> "$age лет"
+    age % 10 == 1 -> "$age год"
     else -> "$age года"
 }
 
@@ -86,10 +86,18 @@ fun timeForHalfWay(
     t1: Double, v1: Double,
     t2: Double, v2: Double,
     t3: Double, v3: Double
-): Double = when {
-    ((v1 * t1 + v2 * t2 + v3 * t3) / 2) < (v1 * t1) -> (v1 * t1 + v2 * t2 + v3 * t3) / 2 / v1
-    ((v1 * t1 + v2 * t2 + v3 * t3) / 2) < (v1 * t1 + v2 * t2) -> t1 + ((v1 * t1 + v2 * t2 + v3 * t3) / 2 - v1 * t1) / v2
-    else -> t1 + t2 + ((v1 * t1 + v2 * t2 + v3 * t3) / 2 - v1 * t1 - v2 * t2) / v3
+): Double {
+    val halfWay = (v1 * t1 + v2 * t2 + v3 * t3) / 2
+    val s1 = v1 * t1
+    val s2 = v2 * t2
+    when {
+        halfWay < s1 ->
+            return halfWay / v1
+        halfWay < s1 + s2 ->
+            return t1 + (halfWay - s1) / v2
+        else ->
+            return t1 + t2 + (halfWay - s1 - s2) / v3
+    }
 }
 
 /**
@@ -106,9 +114,9 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int = when {
-    ((kingX == rookX1) || (kingY == rookY1)) && ((kingX == rookX2) || (kingY == rookY2)) -> 3
-    (kingX == rookX1) || (kingY == rookY1) -> 1
-    (kingX == rookX2) || (kingY == rookY2) -> 2
+    (kingX == rookX1 || kingY == rookY1) && (kingX == rookX2 || kingY == rookY2) -> 3
+    kingX == rookX1 || kingY == rookY1 -> 1
+    kingX == rookX2 || kingY == rookY2 -> 2
     else -> 0
 }
 
@@ -147,10 +155,10 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = when {
-    (c > b) || (a > d) -> -1
-    (a == d) || (b == c) -> 0
-    (c >= a) && (b >= d) -> (d - c)
-    (d >= b) && (a >= c) -> (b - a)
-    (b > c) && (b < d) && (a < c) -> (b - c)
+    c > b || a > d -> -1
+    a == d || b == c -> 0
+    c >= a && b >= d -> d - c
+    d >= b && a >= c -> b - a
+    b > c && b < d && a < c -> b - c
     else -> (d - a)
 }
