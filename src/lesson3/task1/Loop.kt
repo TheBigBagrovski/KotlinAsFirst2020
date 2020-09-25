@@ -7,6 +7,10 @@ import lesson1.task1.sqr
 import java.lang.Math.pow
 import kotlin.math.sqrt
 
+fun main() {
+    println("${fibSequenceDigit(9)}")
+}
+
 // Урок 3: циклы
 // Максимальное количество баллов = 9
 // Рекомендуемое количество баллов = 7
@@ -253,17 +257,11 @@ fun squareSequenceDigit(n: Int): Int {
     var number = 0
     var numberSqr: Int
     var answer = 0
-    var value: Int
     var rank: Int
     while (i != n) {
         number++
-        rank = 0
         numberSqr = sqr(number)
-        value = numberSqr
-        while (value != 0) {
-            value /= 10
-            rank++
-        }
+        rank = digitNumber(numberSqr)
         for (a in 1..rank) {
             answer = (numberSqr / pow(10.0, (rank - a).toDouble()) % 10).toInt()
             i++
@@ -285,24 +283,16 @@ fun squareSequenceDigit(n: Int): Int {
  */
 fun fibSequenceDigit(n: Int): Int {
     var i = 0
-    var num1 = 0
-    var num2 = 1
-    var num3: Int
+    var number = 0
     var answer = 0
     var value: Int
     var rank: Int
     while (i != n) {
-        num3 = num1 + num2
-        num1 = num2
-        num2 = num3
-        rank = 0
-        value = num1
-        while (value != 0) {
-            value /= 10
-            rank++
-        }
+        number++
+        value = fib(number)
+        rank = digitNumber(value)
         for (a in 1..rank) {
-            answer = (num1 / pow(10.0, (rank - a).toDouble()) % 10).toInt()
+            answer = (value / pow(10.0, (rank - a).toDouble()) % 10).toInt()
             i++
             if (i == n)
                 break
