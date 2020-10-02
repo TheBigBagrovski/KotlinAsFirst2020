@@ -6,10 +6,7 @@ import lesson1.task1.numberRevert
 import lesson1.task1.sqr
 import java.lang.Math.pow
 import kotlin.math.sqrt
-
-fun main() {
-    println("${fibSequenceDigit(9)}")
-}
+import kotlin.math.abs
 
 // Урок 3: циклы
 // Максимальное количество баллов = 9
@@ -81,10 +78,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  */
 fun digitNumber(n: Int): Int {
     var answer = 0
-    var number = when {
-        n < 0 -> -n
-        else -> n
-    }
+    var number = abs(n)
     do {
         number /= 10
         answer++
