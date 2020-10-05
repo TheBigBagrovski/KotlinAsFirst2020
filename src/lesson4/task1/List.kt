@@ -127,7 +127,10 @@ fun abs(v: List<Double>): Double = TODO()
  *
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
-fun mean(list: List<Double>): Double = TODO()
+fun mean(list: List<Double>): Double = when (list.isNotEmpty()) {
+    true -> list.sum() / list.size
+    else -> 0.0
+}
 
 /**
  * Средняя (3 балла)
@@ -241,7 +244,71 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    var number = n
+    var counter = 1
+    var part1 = ""
+    var part2 = ""
+    var part3 = ""
+    var part4 = ""
+    while (number != 0) {
+        when (counter) {
+            1 -> {
+                part1 = when (number % 10) {
+                    9 -> "IX"
+                    8 -> "VIII"
+                    7 -> "VII"
+                    6 -> "VI"
+                    5 -> "V"
+                    4 -> "IV"
+                    3 -> "III"
+                    2 -> "II"
+                    1 -> "I"
+                    else -> ""
+                }
+            }
+            2 -> {
+                part2 = when (number % 10) {
+                    9 -> "XC"
+                    8 -> "LXXX"
+                    7 -> "LXX"
+                    6 -> "LX"
+                    5 -> "L"
+                    4 -> "XL"
+                    3 -> "XXX"
+                    2 -> "XX"
+                    1 -> "X"
+                    else -> ""
+                }
+            }
+            3 -> {
+                part3 = when (number % 10) {
+                    9 -> "CM"
+                    8 -> "DCCC"
+                    7 -> "DCC"
+                    6 -> "DC"
+                    5 -> "D"
+                    4 -> "CD"
+                    3 -> "CCC"
+                    2 -> "CC"
+                    1 -> "C"
+                    else -> ""
+                }
+            }
+            4 -> {
+                part4 = when (number % 10) {
+                    3 -> "MMM"
+                    2 -> "MM"
+                    1 -> "M"
+                    else -> ""
+                }
+            }
+        }
+        counter++
+        number /= 10
+    }
+    return part4 + part3 + part2 + part1
+}
 
 /**
  * Очень сложная (7 баллов)
@@ -250,4 +317,88 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+
+fun teen(x: Int): String {
+    return when (x) {
+        9 -> "девятнадцать"
+        8 -> "восемнадцать"
+        7 -> "семнадцать"
+        6 -> "шестнадцать"
+        5 -> "пятнадцать"
+        4 -> "четырнадцать"
+        3 -> "тринадцать"
+        2 -> "двенадцать"
+        1 -> "одиннадцать"
+        else -> "десять"
+    }
+}
+
+fun threeDigits(x: Int, bool: Boolean): String {
+    val hundreds = when (x / 100) {
+        9 -> "девятьсот"
+        8 -> "восемьсот"
+        7 -> "семьсот"
+        6 -> "шестьсот"
+        5 -> "пятьсот"
+        4 -> "четыреста"
+        3 -> "триста"
+        2 -> "двести"
+        1 -> "сто"
+        else -> ""
+    }
+    val decades = when (x % 100 / 10) {
+        9 -> "девяносто"
+        8 -> "восемьдесят"
+        7 -> "семьдесят"
+        6 -> "шестьдесят"
+        5 -> "пятьдесят"
+        4 -> "сорок"
+        3 -> "тридцать"
+        2 -> "двадцать"
+        1 -> teen(x % 10)
+        else -> ""
+    }
+    var units = when {
+        x % 10 == 9 -> "девять"
+        x % 10 == 8 -> "восемь"
+        x % 10 == 7 -> "семь"
+        x % 10 == 6 -> "шесть"
+        x % 10 == 5 -> "пять"
+        x % 10 == 4 -> "четыре"
+        x % 10 == 3 -> "три"
+        x % 10 == 2 && bool -> "две"
+        x % 10 == 2 -> "два"
+        x % 10 == 1 && bool -> "одна"
+        x % 10 == 1 -> "один"
+        else -> ""
+    }
+    if (x % 100 / 10 == 1) units = ""
+    val space1 = when {
+        hundreds != "" && (decades != "" || units != "") -> " "
+        else -> ""
+    }
+    val space2 = when {
+        decades != "" && units != "" -> " "
+        else -> ""
+    }
+    return hundreds + space1 + decades + space2 + units
+}
+
+fun russian(n: Int): String {
+    var thousands = ""
+    var word = ""
+    if (n > 999) {
+        thousands = threeDigits(n / 1000, true)
+        word = when {
+            n / 1000 % 10 in 2..4 -> " тысячи"
+            n / 1000 % 10 == 1 && n / 10000 % 10 != 1 -> " тысяча"
+            else -> " тысяч"
+        }
+    }
+    val units = threeDigits(n % 1000, false)
+    val space = when {
+        thousands != "" && units != "" -> " "
+        else -> ""
+    }
+    return thousands + word + space + units
+}
