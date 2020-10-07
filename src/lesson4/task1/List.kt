@@ -390,7 +390,7 @@ fun russian(n: Int): String {
     if (n > 999) {
         thousands = threeDigits(n / 1000, true)
         word = when {
-            n / 1000 % 10 in 2..4 -> " тысячи"
+            n / 1000 % 10 in 2..4 && n / 10000 % 10 != 1 -> " тысячи"
             n / 1000 % 10 == 1 && n / 10000 % 10 != 1 -> " тысяча"
             else -> " тысяч"
         }
