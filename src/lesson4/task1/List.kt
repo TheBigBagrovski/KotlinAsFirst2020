@@ -245,69 +245,11 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
-    var number = n
-    var counter = 1
-    var part1 = ""
-    var part2 = ""
-    var part3 = ""
-    var part4 = ""
-    while (number != 0) {
-        when (counter) {
-            1 -> {
-                part1 = when (number % 10) {
-                    9 -> "IX"
-                    8 -> "VIII"
-                    7 -> "VII"
-                    6 -> "VI"
-                    5 -> "V"
-                    4 -> "IV"
-                    3 -> "III"
-                    2 -> "II"
-                    1 -> "I"
-                    else -> ""
-                }
-            }
-            2 -> {
-                part2 = when (number % 10) {
-                    9 -> "XC"
-                    8 -> "LXXX"
-                    7 -> "LXX"
-                    6 -> "LX"
-                    5 -> "L"
-                    4 -> "XL"
-                    3 -> "XXX"
-                    2 -> "XX"
-                    1 -> "X"
-                    else -> ""
-                }
-            }
-            3 -> {
-                part3 = when (number % 10) {
-                    9 -> "CM"
-                    8 -> "DCCC"
-                    7 -> "DCC"
-                    6 -> "DC"
-                    5 -> "D"
-                    4 -> "CD"
-                    3 -> "CCC"
-                    2 -> "CC"
-                    1 -> "C"
-                    else -> ""
-                }
-            }
-            4 -> {
-                part4 = when (number % 10) {
-                    3 -> "MMM"
-                    2 -> "MM"
-                    1 -> "M"
-                    else -> ""
-                }
-            }
-        }
-        counter++
-        number /= 10
-    }
-    return part4 + part3 + part2 + part1
+    val part1 = listOf("", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+    val part2 = listOf("", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+    val part3 = listOf("", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+    val part4 = listOf("", "M", "MM", "MMM")
+    return part4[n / 1000] + part3[n / 100 % 10] + part2[n / 10 % 10] + part1[n % 10]
 }
 
 /**
@@ -318,70 +260,52 @@ fun roman(n: Int): String {
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 
+
 fun teen(x: Int): String {
-    return when (x) {
-        9 -> "девятнадцать"
-        8 -> "восемнадцать"
-        7 -> "семнадцать"
-        6 -> "шестнадцать"
-        5 -> "пятнадцать"
-        4 -> "четырнадцать"
-        3 -> "тринадцать"
-        2 -> "двенадцать"
-        1 -> "одиннадцать"
-        else -> "десять"
-    }
+    val teen = listOf(
+        "десять",
+        "одиннадцать",
+        "двенадцать",
+        "тринадцать",
+        "четырнадцать",
+        "пятнадцать",
+        "шестнадцать",
+        "семнадцать",
+        "восемнадцать",
+        "девятнадцать"
+    )
+    return teen[x]
 }
 
 fun threeDigits(x: Int, bool: Boolean): String {
-    val hundreds = when (x / 100) {
-        9 -> "девятьсот"
-        8 -> "восемьсот"
-        7 -> "семьсот"
-        6 -> "шестьсот"
-        5 -> "пятьсот"
-        4 -> "четыреста"
-        3 -> "триста"
-        2 -> "двести"
-        1 -> "сто"
-        else -> ""
+    val hundreds =
+        listOf("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот")
+    val decades = listOf(
+        "",
+        teen(x % 10),
+        "двадцать",
+        "тридцать",
+        "сорок",
+        "пятьдесят",
+        "шестьдесят",
+        "семьдесят",
+        "восемьдесят",
+        "девяносто"
+    )
+    val units = when {
+        x % 100 / 10 == 1 -> listOf("", "", "", "", "", "", "", "", "", "")
+        bool -> listOf("", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
+        else -> listOf("", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
     }
-    val decades = when (x % 100 / 10) {
-        9 -> "девяносто"
-        8 -> "восемьдесят"
-        7 -> "семьдесят"
-        6 -> "шестьдесят"
-        5 -> "пятьдесят"
-        4 -> "сорок"
-        3 -> "тридцать"
-        2 -> "двадцать"
-        1 -> teen(x % 10)
-        else -> ""
-    }
-    var units = when {
-        x % 10 == 9 -> "девять"
-        x % 10 == 8 -> "восемь"
-        x % 10 == 7 -> "семь"
-        x % 10 == 6 -> "шесть"
-        x % 10 == 5 -> "пять"
-        x % 10 == 4 -> "четыре"
-        x % 10 == 3 -> "три"
-        x % 10 == 2 && bool -> "две"
-        x % 10 == 2 -> "два"
-        x % 10 == 1 && bool -> "одна"
-        x % 10 == 1 -> "один"
-        else -> ""
-    }
-    if (x % 100 / 10 == 1) units = ""
     val space1 = when {
-        hundreds != "" && (decades != "" || units != "") -> " "
+        hundreds[x / 100] != "" && (decades[x / 10 % 10] != "" || units[x % 10] != "") -> " "
         else -> ""
     }
     val space2 = when {
-        decades != "" && units != "" -> " "
+        decades[x / 10 % 10] != "" && units[x % 10] != "" -> " "
         else -> ""
     }
-    return hundreds + space1 + decades + space2 + units
+    return hundreds[x / 100] + space1 + decades[x / 10 % 10] + space2 + units[x % 10]
 }
 
 fun russian(n: Int): String {
