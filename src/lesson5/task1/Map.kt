@@ -2,10 +2,21 @@
 
 package lesson5.task1
 
+import ru.spbstu.wheels.sorted
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
 // Вместе с предыдущими уроками = 33/47
+
+fun main() {
+    print(
+        bagPacking(
+            mapOf("Кубок" to (500 to 2000), "Слиток" to (1000 to 5000)),
+            850
+        )
+    )
+}
 
 /**
  * Пример
@@ -97,23 +108,15 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
-    var grade5 = listOf<String>()
-    var grade4 = listOf<String>()
-    var grade3 = listOf<String>()
-    for ((student, grade) in grades)
-        when (grade) {
-            5 -> grade5 += student
-            4 -> grade4 += student
-            else -> grade3 += student
-        }
     val answer = mutableMapOf<Int, List<String>>()
-    if (grade5.isNotEmpty())
-        answer += (5 to grade5)
-    if (grade4.isNotEmpty())
-        answer += (4 to grade4)
-    if (grade3.isNotEmpty())
-        answer += (3 to grade3)
-    return answer
+    for ((_, grade) in grades)
+        if (!answer.containsKey(grade)) {
+            val list = mutableListOf<String>()
+            for ((name1, grade1) in grades)
+                if (grade1 == grade) list.add(name1)
+            answer[grade] = list.toList()
+        }
+    return answer.toMap()
 }
 
 /**
@@ -179,19 +182,19 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
  *     mapOf("Emergency" to "911", "Police" to "02")
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
-fun putOrAdd(answer: MutableMap<String, String>, map: Map<String, String>): MutableMap<String, String> {
+fun MutableMap<String, String>.putOrAdd(map: Map<String, String>): MutableMap<String, String> {
     for ((name, number) in map) {
-        if (name in answer && number != answer[name])
-            answer[name] += ", $number"
-        else answer[name] = number
+        if (name in this && number != this[name])
+            this[name] += ", $number"
+        else this[name] = number
     }
-    return answer
+    return this
 }
 
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
     val answer = mutableMapOf<String, String>()
-    putOrAdd(answer, mapA)
-    putOrAdd(answer, mapB)
+    answer.putOrAdd(mapA)
+    answer.putOrAdd(mapB)
     answer.toMap()
     return answer
 }
@@ -207,27 +210,14 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val result = mutableMapOf<String, Double>()
-    var counter: Int
-    var sum: Double
-    var str: String
-    var num: Double
-    for ((name, price) in stockPrices) {
-        if (!result.containsKey(name)) {
-            counter = 0
-            sum = 0.0
-            str = name
-            for ((name1, price1) in stockPrices) {
-                if (name1 == str) {
-                    counter++
-                    num = price1
-                    sum += num
-                }
-            }
-            result[name] = sum / counter
-        }
-    }
-    return result
+    val answer = mutableMapOf<String, Double>()
+    val prices = mutableMapOf<String, MutableList<Double>>()
+    for ((name, price) in stockPrices)
+        if (!prices.containsKey(name)) prices[name] = mutableListOf(price)
+        else prices[name]!! += price
+    for ((name, priceList) in prices)
+        answer[name] = priceList.sum() / priceList.size
+    return answer.toMap()
 }
 
 /**
@@ -246,9 +236,8 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var minPrice = 999999999999.9
-    var answer: String?
-    answer = null
+    var minPrice = Double.MAX_VALUE
+    var answer: String? = null
     for ((name, pair) in stuff)
         if (pair.first == kind && pair.second < minPrice) {
             minPrice = pair.second
@@ -266,12 +255,7 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    for (char in word)
-        if (!chars.contains(char))
-            return false
-    return true
-}
+fun canBuildFrom(chars: List<Char>, word: String): Boolean = word.toSet().intersect(chars) == word.toSet()
 
 /**
  * Средняя (4 балла)
@@ -287,16 +271,16 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  */
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val answer = mutableMapOf<String, Int>()
-    for (char in list) {
-        if (!answer.containsKey(char))
-            answer[char] = 1
-        else answer[char]
-    }
-    for ((char, num) in answer)
-        if (num == 1)
-            answer.remove(char)
+    val check = mutableMapOf<String, Int>()
+    for (element in list)
+        when {
+            answer.containsKey(element) -> answer[element] = answer[element]!! + 1
+            check[element] == 1 -> answer[element] = 2
+            else -> check[element] = 1
+        }
     return answer
 }
+
 
 /**
  * Средняя (3 балла)
@@ -366,14 +350,13 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    var answer = (-1 to -1)
     for (num in list) {
-        if (number - num in list.sorted() && number - num != num) {
-            answer = (list.indexOf(num) to list.indexOf(number - num))
-            break
-        }
+        val help = list.toMutableList()
+        help[help.indexOf(num)] = number + 1
+        if (help.contains(number - num))
+            return (list.indexOf(num) to help.indexOf(number - num)).sorted()
     }
-    return answer
+    return (-1 to -1)
 }
 
 /**
@@ -397,31 +380,31 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
+fun MutableMap<String, Double>.findBestValue(): Pair<String, Double> {
+    var bestValue = 0.0
+    var bestItem = ""
+    for ((name, value) in this)
+        if (value > bestValue) {
+            bestValue = value
+            bestItem = name
+        }
+    return (bestItem to bestValue)
+}
+
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val answer = mutableSetOf<String>()
-    var currentWeight = 0
-    var bestItem: String?
-    var currentLiquidity = 0.0
-    bestItem = null
-    val liquidity = mutableMapOf<String, Double>()
-    for ((item, pair) in treasures)
-        liquidity[item] = pair.second.toDouble() / pair.first.toDouble()
-    while (currentWeight <= capacity) {
-        for ((item, value) in liquidity) {
-            if (value > currentLiquidity) {
-                currentLiquidity = value
-                bestItem = item
-            }
+    var currentCapacity = 0
+    val treasuresValue = mutableMapOf<String, Double>()
+    for ((item, pairWeightToPrice) in treasures)
+        if (pairWeightToPrice.first <= capacity)
+            treasuresValue[item] = pairWeightToPrice.second.toDouble() / pairWeightToPrice.first.toDouble()
+    while (treasuresValue.isNotEmpty()) {
+        val bestItem = treasuresValue.findBestValue()
+        if (currentCapacity + treasures.getOrElse(bestItem.first) { return answer }.first <= capacity) {
+            answer.add(bestItem.first)
+            currentCapacity += treasures.getOrElse(bestItem.first) { return answer }.first
+            treasuresValue.remove(bestItem.first)
         }
-        if (currentWeight + treasures[bestItem]!!.first <= capacity) {
-            if (bestItem != null)
-                answer.add(bestItem)
-            currentWeight += treasures[bestItem]!!.first
-        }
-        liquidity.remove(bestItem)
-        currentLiquidity = 0.0
-        if (liquidity.isEmpty())
-            break
     }
     return answer
 }
