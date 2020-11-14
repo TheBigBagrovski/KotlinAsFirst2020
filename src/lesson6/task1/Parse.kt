@@ -9,10 +9,6 @@ import lesson2.task2.daysInMonth
 // Рекомендуемое количество баллов = 11
 // Вместе с предыдущими уроками (пять лучших, 2-6) = 40/54
 
-fun main() {
-    println(mostExpensive(""))
-}
-
 /**
  * Пример
  *
@@ -81,7 +77,7 @@ println("Достигнут <конец файла> в процессе чтен
  * входными данными.
  */
 fun checkInputDate(day: Int, month: Int, year: Int): Boolean = when {
-    day > 0 && month > 0 && year > 0 && day < daysInMonth(month, year) -> true
+    day > 0 && month > 0 && month < 13 && year > 0 && day <= daysInMonth(month, year) -> true
     else -> false
 }
 
@@ -128,6 +124,7 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
+    if (digital.contains(Regex("""[^\d.]"""))) return ""
     val parts = digital.split(".")
     val monthName = mapOf(
         1 to "января",
@@ -143,19 +140,15 @@ fun dateDigitToStr(digital: String): String {
         11 to "ноября",
         12 to "декабря",
     )
-    return try {
-        if (parts.size == 3 &&
-            checkInputDate(
-                parts[0].toInt(),
-                parts[1].toInt(),
-                parts[2].toInt()
-            )
+    return if (parts.size == 3 &&
+        checkInputDate(
+            parts[0].toInt(),
+            parts[1].toInt(),
+            parts[2].toInt()
         )
-            String.format("%d %s %d", parts[0].toInt(), monthName[parts[1].toInt()], parts[2].toInt())
-        else ""
-    } catch (e: NumberFormatException) {
-        ""
-    }
+    )
+        String.format("%d %s %d", parts[0].toInt(), monthName[parts[1].toInt()], parts[2].toInt())
+    else ""
 }
 
 /**
@@ -233,27 +226,22 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * Все цены должны быть больше нуля либо равны нулю.
  */
 fun mostExpensive(description: String): String {
+    if (description.contains(Regex("""[^а-яёА-ЯЁ0-9.; ]"""))) return ""
+    if (!description.contains(Regex("""[а-яёА-ЯЁ0-9 ]"""))) return ""
     var answer = ""
     var maxPrice = 0.0
-    val priceList = description.split("; ")
-    val itemToPrice = mutableMapOf<String, String>()
-    try {
-        for (part in priceList) {
-            val pair = part.split(" ")
-            itemToPrice[pair[0]] = pair[1]
-        }
-    } catch (e: IndexOutOfBoundsException) {
-        return ""
+    val allPrices = description.split("; ")
+    val priceList = mutableMapOf<String, Double>()
+    for (part in allPrices) {
+        if (!part.matches(Regex("""([а-яёА-ЯЁ]+ [0-9.]*)"""))) return ""
+        val pair = part.split(" ")
+        priceList[pair[0]] = pair[1].toDouble()
     }
-    try {
-        for ((name, price) in itemToPrice) {
-            if (price.toDouble() > maxPrice) {
-                answer = name
-                maxPrice = price.toDouble()
-            }
+    for ((name, price) in priceList) {
+        if (price >= maxPrice) {
+            maxPrice = price
+            answer = name
         }
-    } catch (e: NumberFormatException) {
-        return ""
     }
     return answer
 }

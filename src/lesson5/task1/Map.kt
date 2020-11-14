@@ -10,15 +10,6 @@ import java.lang.Integer.max
 // Рекомендуемое количество баллов = 9
 // Вместе с предыдущими уроками = 33/47
 
-fun main() {
-    println(
-        bagPacking(
-            mapOf("1" to (3 to 1), "2" to (4 to 6), "3" to (5 to 4), "4" to (8 to 7), "5" to (9 to 6)),
-            13
-        )
-    )
-}
-
 /**
  * Пример
  *
@@ -228,15 +219,13 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var minPrice = -1.0
+    var minPrice = Double.MAX_VALUE + 1
     var answer: String? = null
-    for ((name, pair) in stuff) {
-        if (minPrice == -1.0) minPrice = pair.second
+    for ((name, pair) in stuff)
         if (pair.first == kind && pair.second <= minPrice) {
             minPrice = pair.second
             answer = name
         }
-    }
     return answer
 }
 
@@ -268,7 +257,7 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
     val check = mutableMapOf<String, Int>()
     for (sym in list)
         if (!check.containsKey(sym)) check[sym] = 1
-        else answer.getOrPut(sym) { 2 }.inc()
+        else answer[sym] = answer.getOrPut(sym) { 1 }.inc()
     return answer
 }
 
@@ -348,7 +337,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     for (num in list) {
         index++
         if (number - num == num) {
-            if (used.contains(num)) return (used.indexOf(num) to index)
+            if (used.contains(num)) return (list.indexOf(num) to index)
         } else if ((set - num).contains(number - num))
             return (list.indexOf(num) to (list.indexOf(number - num))).sorted()
         used.add(num)
