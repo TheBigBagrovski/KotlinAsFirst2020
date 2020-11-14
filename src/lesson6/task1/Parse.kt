@@ -2,10 +2,16 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
+
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
 // Вместе с предыдущими уроками (пять лучших, 2-6) = 40/54
+
+fun main() {
+    println(mostExpensive(""))
+}
 
 /**
  * Пример
@@ -46,22 +52,22 @@ fun timeSecondsToStr(seconds: Int): String {
 
 /**
  * Пример: консольный ввод
- */
-fun main() {
-    println("Введите время в формате ЧЧ:ММ:СС")
-    val line = readLine()
-    if (line != null) {
-        val seconds = timeStrToSeconds(line)
-        if (seconds == -1) {
-            println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
-        } else {
-            println("Прошло секунд с начала суток: $seconds")
-        }
-    } else {
-        println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
-    }
-}
 
+fun main() {
+println("Введите время в формате ЧЧ:ММ:СС")
+val line = readLine()
+if (line != null) {
+val seconds = timeStrToSeconds(line)
+if (seconds == -1) {
+println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
+} else {
+println("Прошло секунд с начала суток: $seconds")
+}
+} else {
+println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
+}
+}
+ */
 
 /**
  * Средняя (4 балла)
@@ -74,7 +80,42 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun checkInputDate(day: Int, month: Int, year: Int): Boolean = when {
+    day > 0 && month > 0 && year > 0 && day < daysInMonth(month, year) -> true
+    else -> false
+}
+
+fun dateStrToDigit(str: String): String {
+    val parts = str.split(" ")
+    val monthName = mapOf(
+        "января" to 1,
+        "февраля" to 2,
+        "марта" to 3,
+        "апреля" to 4,
+        "мая" to 5,
+        "июня" to 6,
+        "июля" to 7,
+        "августа" to 8,
+        "сентября" to 9,
+        "октября" to 10,
+        "ноября" to 11,
+        "декабря" to 12,
+    )
+    return if (parts.size == 3 && monthName.contains(parts[1]) &&
+        checkInputDate(
+            parts[0].toInt(),
+            monthName[parts[1]] ?: 40,
+            parts[2].toInt()
+        )
+    )
+        String.format(
+            "%02d.%02d.%s",
+            parts[0].toInt(),
+            monthName[parts[1]],
+            parts[2]
+        )
+    else ""
+}
 
 /**
  * Средняя (4 балла)
@@ -86,7 +127,36 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val parts = digital.split(".")
+    val monthName = mapOf(
+        1 to "января",
+        2 to "февраля",
+        3 to "марта",
+        4 to "апреля",
+        5 to "мая",
+        6 to "июня",
+        7 to "июля",
+        8 to "августа",
+        9 to "сентября",
+        10 to "октября",
+        11 to "ноября",
+        12 to "декабря",
+    )
+    return try {
+        if (parts.size == 3 &&
+            checkInputDate(
+                parts[0].toInt(),
+                parts[1].toInt(),
+                parts[2].toInt()
+            )
+        )
+            String.format("%d %s %d", parts[0].toInt(), monthName[parts[1].toInt()], parts[2].toInt())
+        else ""
+    } catch (e: NumberFormatException) {
+        ""
+    }
+}
 
 /**
  * Средняя (4 балла)
@@ -162,7 +232,31 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше нуля либо равны нулю.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    var answer = ""
+    var maxPrice = 0.0
+    val priceList = description.split("; ")
+    val itemToPrice = mutableMapOf<String, String>()
+    try {
+        for (part in priceList) {
+            val pair = part.split(" ")
+            itemToPrice[pair[0]] = pair[1]
+        }
+    } catch (e: IndexOutOfBoundsException) {
+        return ""
+    }
+    try {
+        for ((name, price) in itemToPrice) {
+            if (price.toDouble() > maxPrice) {
+                answer = name
+                maxPrice = price.toDouble()
+            }
+        }
+    } catch (e: NumberFormatException) {
+        return ""
+    }
+    return answer
+}
 
 /**
  * Сложная (6 баллов)
@@ -214,3 +308,32 @@ fun fromRoman(roman: String): Int = TODO()
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+/*{
+    val permissibleSymbols = listOf('>', '<', '+', '-', '[', ']')
+    var currentIndex = cells / 2
+    var conveyor = mutableListOf<Int>()
+    for (i in 0..cells)
+        conveyor.add(0)
+    var brackets = 0
+    for (symbol in commands) {
+        if (!permissibleSymbols.contains(symbol))
+            throw IllegalArgumentException("Wrong symbol")
+        else if (symbol == '[')
+            brackets++
+        else if (symbol == ']')
+            brackets--
+        if (brackets < 0)
+            throw IllegalArgumentException("Wrong symbol")
+    }
+    for (symbol in commands) {
+        if (symbol == '>')
+            currentIndex++
+        else if (symbol == '<')
+            currentIndex--
+        else if (symbol == '+')
+            conveyor[currentIndex]++
+        else if (symbol == '-')
+            conveyor[currentIndex]--
+        else if (symbol == '[')
+            if (conveyor[currentIndex] == 0)
+*/

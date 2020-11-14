@@ -3,11 +3,21 @@
 package lesson5.task1
 
 import ru.spbstu.wheels.sorted
+import java.lang.Integer.max
 
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
 // Вместе с предыдущими уроками = 33/47
+
+fun main() {
+    println(
+        bagPacking(
+            mapOf("1" to (3 to 1), "2" to (4 to 6), "3" to (5 to 4), "4" to (8 to 7), "5" to (9 to 6)),
+            13
+        )
+    )
+}
 
 /**
  * Пример
@@ -99,14 +109,8 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
-    val answer = mutableMapOf<Int, List<String>>()
-    for ((_, grade) in grades)
-        if (!answer.containsKey(grade)) {
-            val list = mutableListOf<String>()
-            for ((name1, grade1) in grades)
-                if (grade1 == grade) list.add(name1)
-            answer[grade] = list.toList()
-        }
+    val answer = mutableMapOf<Int, MutableList<String>>()
+    for ((student, grade) in grades) answer.getOrPut(grade) { mutableListOf() }.add(student)
     return answer.toMap()
 }
 
@@ -203,11 +207,8 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
     val answer = mutableMapOf<String, Double>()
     val prices = mutableMapOf<String, MutableList<Double>>()
-    for ((name, price) in stockPrices)
-        if (!prices.containsKey(name)) prices[name] = mutableListOf(price)
-        else prices[name]!! += price
-    for ((name, priceList) in prices)
-        answer[name] = priceList.sum() / priceList.size
+    for ((name, price) in stockPrices) prices.getOrPut(name) { mutableListOf() }.add(price)
+    for ((name, priceList) in prices) answer[name] = priceList.sum() / priceList.size
     return answer.toMap()
 }
 
@@ -227,13 +228,15 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var minPrice = Double.MAX_VALUE
+    var minPrice = -1.0
     var answer: String? = null
-    for ((name, pair) in stuff)
-        if (pair.first == kind && pair.second < minPrice) {
+    for ((name, pair) in stuff) {
+        if (minPrice == -1.0) minPrice = pair.second
+        if (pair.first == kind && pair.second <= minPrice) {
             minPrice = pair.second
             answer = name
         }
+    }
     return answer
 }
 
@@ -263,12 +266,9 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean = word.toSet().inters
 fun extractRepeats(list: List<String>): Map<String, Int> {
     val answer = mutableMapOf<String, Int>()
     val check = mutableMapOf<String, Int>()
-    for (element in list)
-        when {
-            answer.containsKey(element) -> answer[element] = answer[element]!! + 1
-            check[element] == 1 -> answer[element] = 2
-            else -> check[element] = 1
-        }
+    for (sym in list)
+        if (!check.containsKey(sym)) check[sym] = 1
+        else answer.getOrPut(sym) { 2 }.inc()
     return answer
 }
 
@@ -341,11 +341,17 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    val set = mutableSetOf<Int>()
+    var index = -1
+    set.addAll(list)
+    val used = mutableSetOf<Int>()
     for (num in list) {
-        val help = list.toMutableList()
-        help[help.indexOf(num)] = number + 1
-        if (help.contains(number - num))
-            return (list.indexOf(num) to help.indexOf(number - num)).sorted()
+        index++
+        if (number - num == num) {
+            if (used.contains(num)) return (used.indexOf(num) to index)
+        } else if ((set - num).contains(number - num))
+            return (list.indexOf(num) to (list.indexOf(number - num))).sorted()
+        used.add(num)
     }
     return (-1 to -1)
 }
@@ -371,31 +377,39 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun MutableMap<String, Double>.findBestValue(): Pair<String, Double> {
-    var bestValue = 0.0
-    var bestItem = ""
-    for ((name, value) in this)
-        if (value > bestValue) {
-            bestValue = value
-            bestItem = name
-        }
-    return (bestItem to bestValue)
-}
-
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val answer = mutableSetOf<String>()
-    var currentCapacity = 0
-    val treasuresValue = mutableMapOf<String, Double>()
-    for ((item, pairWeightToPrice) in treasures)
-        if (pairWeightToPrice.first <= capacity)
-            treasuresValue[item] = pairWeightToPrice.second.toDouble() / pairWeightToPrice.first.toDouble()
-    while (treasuresValue.isNotEmpty()) {
-        val bestItem = treasuresValue.findBestValue()
-        if (currentCapacity + treasures.getOrElse(bestItem.first) { return answer }.first <= capacity) {
-            answer.add(bestItem.first)
-            currentCapacity += treasures.getOrElse(bestItem.first) { return answer }.first
-            treasuresValue.remove(bestItem.first)
+    val waysToFill: Array<Array<Int>> = Array(treasures.size + 1) { Array(capacity + 1) { 0 } }
+    val weights = mutableListOf<Int>()
+    val values = mutableListOf<Int>()
+    val names = mutableListOf<String>()
+    weights += -1
+    values += -1
+    names += "-1"
+    for ((name, pair) in treasures) {
+        weights += pair.first
+        values += pair.second
+        names += name
+    }
+    for (number in 1..treasures.size)
+        for (currentCapacity in 1..capacity)
+            if (currentCapacity >= weights[number])
+                waysToFill[number][currentCapacity] = max(
+                    waysToFill[number - 1][currentCapacity],
+                    waysToFill[number - 1][currentCapacity - weights[number]] + values[number]
+                )
+            else
+                waysToFill[number][currentCapacity] = waysToFill[number - 1][currentCapacity]
+    fun findAnswer(num: Int, cap: Int) {
+        if (waysToFill[num][cap] == 0)
+            return
+        if (waysToFill[num - 1][cap] == waysToFill[num][cap])
+            findAnswer(num - 1, cap)
+        else {
+            findAnswer(num - 1, cap - weights[num])
+            answer.add(names[num])
         }
     }
-    return answer
+    findAnswer(treasures.size, capacity)
+    return answer.toSet()
 }
