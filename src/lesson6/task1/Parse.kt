@@ -9,6 +9,10 @@ import lesson2.task2.daysInMonth
 // Рекомендуемое количество баллов = 11
 // Вместе с предыдущими уроками (пять лучших, 2-6) = 40/54
 
+fun main() {
+    println(flattenPhoneNumber("+7 (921) 123-45-67"))
+}
+
 /**
  * Пример
  *
@@ -165,7 +169,21 @@ fun dateDigitToStr(digital: String): String {
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    if (phone.contains(Regex("""[^0-9 \-+()]"""))) return ""
+    if (phone.contains(Regex("""(\(\))|(\).*\()"""))) return ""
+    var countOB = 0
+    var countCB = 0
+    for (char in phone)
+        if (char == '(')
+            countOB++
+        else if (char == ')')
+            countCB++
+    val answer = Regex("""[^0-9+]""").replace(phone, "")
+    if (countCB * countOB > 1 || countCB != countOB) return ""
+    if (phone.contains(Regex("""[0-9]+\+"""))) return ""
+    return answer
+}
 
 /**
  * Средняя (5 баллов)
@@ -225,7 +243,7 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше нуля либо равны нулю.
  */
-fun mostExpensive(description: String): String {
+fun mostExpensive(description: String): String = TODO() /*
     /*if (description.contains(Regex("""[^а-яёА-ЯЁ\w.; ]"""))) return ""*/
     if (!description.contains(Regex("""[; ]"""))) return ""
     var answer = ""
@@ -245,7 +263,7 @@ fun mostExpensive(description: String): String {
         }
     }
     return answer
-}
+}*/
 
 /**
  * Сложная (6 баллов)
