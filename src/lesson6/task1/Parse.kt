@@ -233,7 +233,7 @@ fun mostExpensive(description: String): String {
     val allPrices = description.split("; ")
     val priceList = mutableMapOf<String, Double>()
     for (part in allPrices) {
-        if (!part.matches(Regex("""[а-яёА-ЯЁa-zA-Z={]+ [\d.]+"""))) return ""
+        if (!part.matches(Regex("""[а-яёА-ЯЁ\w={]+ [\d.]+"""))) return ""
         val pair = part.split(" ")
         if (part.contains(Regex(""" 0"""))) return pair[0]
         priceList[pair[0]] = pair[1].toDouble()
