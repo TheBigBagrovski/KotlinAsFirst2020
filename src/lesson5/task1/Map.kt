@@ -2,7 +2,6 @@
 
 package lesson5.task1
 
-import ru.spbstu.wheels.sorted
 import java.lang.Integer.max
 
 // Урок 5: ассоциативные массивы и множества
@@ -219,7 +218,7 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    var minPrice = Double.MAX_VALUE + 1
+    var minPrice = Double.POSITIVE_INFINITY
     var answer: String? = null
     for ((name, pair) in stuff)
         if (pair.first == kind && pair.second <= minPrice) {
@@ -336,15 +335,13 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val set = mutableSetOf<Int>()
-    var index = -1
+    val indexes = mutableMapOf<Int, Int>()
     set.addAll(list)
     val used = mutableSetOf<Int>()
-    for (num in list) {
-        index++
-        if (number - num == num) {
-            if (used.contains(num)) return (list.indexOf(num) to index)
-        } else if ((set - num).contains(number - num))
-            return (list.indexOf(num) to (list.indexOf(number - num))).sorted()
+    for ((index, num) in list.withIndex()) {
+        if (used.contains(number - num))
+            return ((indexes[number - num]!! to index))
+        indexes[num] = index
         used.add(num)
     }
     return (-1 to -1)
@@ -379,7 +376,7 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
     val names = mutableListOf<String>()
     weights += -1
     values += -1
-    names += "-1"
+    names += ""
     for ((name, pair) in treasures) {
         weights += pair.first
         values += pair.second

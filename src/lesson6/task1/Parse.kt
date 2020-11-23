@@ -80,6 +80,36 @@ println("Достигнут <конец файла> в процессе чтен
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
+private val monthName1 = mapOf(
+    "января" to 1,
+    "февраля" to 2,
+    "марта" to 3,
+    "апреля" to 4,
+    "мая" to 5,
+    "июня" to 6,
+    "июля" to 7,
+    "августа" to 8,
+    "сентября" to 9,
+    "октября" to 10,
+    "ноября" to 11,
+    "декабря" to 12,
+)
+
+private val monthName2 = mapOf(
+    1 to "января",
+    2 to "февраля",
+    3 to "марта",
+    4 to "апреля",
+    5 to "мая",
+    6 to "июня",
+    7 to "июля",
+    8 to "августа",
+    9 to "сентября",
+    10 to "октября",
+    11 to "ноября",
+    12 to "декабря",
+)
+
 fun checkInputDate(day: Int, month: Int, year: Int): Boolean = when {
     day > 0 && month > 0 && month < 13 && year > 0 && day <= daysInMonth(month, year) -> true
     else -> false
@@ -87,31 +117,21 @@ fun checkInputDate(day: Int, month: Int, year: Int): Boolean = when {
 
 fun dateStrToDigit(str: String): String {
     val parts = str.split(" ")
-    val monthName = mapOf(
-        "января" to 1,
-        "февраля" to 2,
-        "марта" to 3,
-        "апреля" to 4,
-        "мая" to 5,
-        "июня" to 6,
-        "июля" to 7,
-        "августа" to 8,
-        "сентября" to 9,
-        "октября" to 10,
-        "ноября" to 11,
-        "декабря" to 12,
-    )
-    return if (parts.size == 3 && monthName.contains(parts[1]) &&
+    val month: Int
+    if (parts.size == 3)
+        month = monthName1[parts[1]] ?: return ""
+    else return ""
+    return if (
         checkInputDate(
             parts[0].toInt(),
-            monthName[parts[1]] ?: 40,
+            month,
             parts[2].toInt()
         )
     )
         String.format(
             "%02d.%02d.%s",
             parts[0].toInt(),
-            monthName[parts[1]],
+            monthName1[parts[1]],
             parts[2]
         )
     else ""
@@ -130,20 +150,6 @@ fun dateStrToDigit(str: String): String {
 fun dateDigitToStr(digital: String): String {
     if (digital.contains(Regex("""[^\d.]"""))) return ""
     val parts = digital.split(".")
-    val monthName = mapOf(
-        1 to "января",
-        2 to "февраля",
-        3 to "марта",
-        4 to "апреля",
-        5 to "мая",
-        6 to "июня",
-        7 to "июля",
-        8 to "августа",
-        9 to "сентября",
-        10 to "октября",
-        11 to "ноября",
-        12 to "декабря",
-    )
     return if (parts.size == 3 &&
         checkInputDate(
             parts[0].toInt(),
@@ -151,7 +157,7 @@ fun dateDigitToStr(digital: String): String {
             parts[2].toInt()
         )
     )
-        String.format("%d %s %d", parts[0].toInt(), monthName[parts[1].toInt()], parts[2].toInt())
+        String.format("%d %s %d", parts[0].toInt(), monthName2[parts[1].toInt()], parts[2].toInt())
     else ""
 }
 
@@ -170,19 +176,8 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    if (phone.contains(Regex("""[^0-9 \-+()]"""))) return ""
-    if (phone.contains(Regex("""(\(\))|(\).*\()"""))) return ""
-    var countOB = 0
-    var countCB = 0
-    for (char in phone)
-        if (char == '(')
-            countOB++
-        else if (char == ')')
-            countCB++
-    val answer = Regex("""[^0-9+]""").replace(phone, "")
-    if (countCB * countOB > 1 || countCB != countOB) return ""
-    if (phone.contains(Regex("""[0-9]+\+"""))) return ""
-    return answer
+    if (phone.contains(Regex("""[^0-9 \-+()]|(\(\))|([0-9]+\+)|(\).*\()|(\(.*\()|(\).*\))"""))) return ""
+    return Regex("""[^0-9+]""").replace(phone, "")
 }
 
 /**
@@ -243,12 +238,16 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше нуля либо равны нулю.
  */
-fun mostExpensive(description: String): String = TODO() /*
-    /*if (description.contains(Regex("""[^а-яёА-ЯЁ\w.; ]"""))) return ""*/
-    if (!description.contains(Regex("""[; ]"""))) return ""
+fun mostExpensive(description: String): String {
+    val allPrices: List<String>
+    if (!description.contains(Regex("""[; ]""")))
+        return if (description.contains(""" """)) {
+            val pair = description.split(""" """)
+            pair[0]
+        } else ""
+    else allPrices = description.split("; ")
     var answer = ""
     var maxPrice = 0.0
-    val allPrices = description.split("; ")
     val priceList = mutableMapOf<String, Double>()
     for (part in allPrices) {
         if (part.contains(Regex(""" 0"""))) return part.split(" ")[0]
@@ -263,7 +262,7 @@ fun mostExpensive(description: String): String = TODO() /*
         }
     }
     return answer
-}*/
+}
 
 /**
  * Сложная (6 баллов)
