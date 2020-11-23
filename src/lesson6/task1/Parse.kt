@@ -259,7 +259,7 @@ fun mostExpensive(description: String): String {
             maxPrice = price
             answer = name
         } else if (price == maxPrice)
-            return "Any good with price $price"
+            return name
     }
     return answer
 }
