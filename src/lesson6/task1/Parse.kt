@@ -10,7 +10,7 @@ import lesson2.task2.daysInMonth
 // Вместе с предыдущими уроками (пять лучших, 2-6) = 40/54
 
 fun main() {
-    println(flattenPhoneNumber("+7 (921) 123-45-67"))
+    println(mostExpensive("+ 0; a 0"))
 }
 
 /**
@@ -250,16 +250,16 @@ fun mostExpensive(description: String): String {
     var maxPrice = 0.0
     val priceList = mutableMapOf<String, Double>()
     for (part in allPrices) {
-        if (allPrices.size == 1) return part.split(" ")[0]
-        if (!part.matches(Regex("""[а-яёА-ЯЁ\w]+ [\d.]+"""))) return ""
+        if (!part.matches(Regex(""".+ [\d.]+"""))) return ""
         val pair = part.split(" ")
         priceList[pair[0]] = pair[1].toDouble()
     }
     for ((name, price) in priceList) {
-        if (price >= maxPrice) {
+        if (price > maxPrice) {
             maxPrice = price
             answer = name
-        }
+        } else if (price == maxPrice)
+            return "Any good with price $price"
     }
     return answer
 }
@@ -314,32 +314,3 @@ fun fromRoman(roman: String): Int = TODO()
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
-/*{
-    val permissibleSymbols = listOf('>', '<', '+', '-', '[', ']')
-    var currentIndex = cells / 2
-    var conveyor = mutableListOf<Int>()
-    for (i in 0..cells)
-        conveyor.add(0)
-    var brackets = 0
-    for (symbol in commands) {
-        if (!permissibleSymbols.contains(symbol))
-            throw IllegalArgumentException("Wrong symbol")
-        else if (symbol == '[')
-            brackets++
-        else if (symbol == ']')
-            brackets--
-        if (brackets < 0)
-            throw IllegalArgumentException("Wrong symbol")
-    }
-    for (symbol in commands) {
-        if (symbol == '>')
-            currentIndex++
-        else if (symbol == '<')
-            currentIndex--
-        else if (symbol == '+')
-            conveyor[currentIndex]++
-        else if (symbol == '-')
-            conveyor[currentIndex]--
-        else if (symbol == '[')
-            if (conveyor[currentIndex] == 0)
-*/
