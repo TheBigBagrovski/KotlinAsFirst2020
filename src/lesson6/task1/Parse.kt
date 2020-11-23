@@ -255,11 +255,10 @@ fun mostExpensive(description: String): String {
         priceList[pair[0]] = pair[1].toDouble()
     }
     for ((name, price) in priceList) {
-        if (price > maxPrice) {
+        if (price >= maxPrice) {
             maxPrice = price
             answer = name
-        } else if (price == maxPrice)
-            return name
+        }
     }
     return answer
 }
