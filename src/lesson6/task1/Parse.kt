@@ -176,7 +176,7 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    if (phone.contains(Regex("""[^0-9 \-+()]|(\(\))|([0-9]+\+)|(\).*\()|(\(.*\()|(\).*\))"""))) return ""
+    if (phone.contains(Regex("""[^0-9 \-+()]|(\(\))|([0-9]+\+)|(\).*\()|(\(.*\()|(\).*\))|[+]$"""))) return ""
     return Regex("""[^0-9+]""").replace(phone, "")
 }
 
