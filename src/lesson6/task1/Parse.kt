@@ -10,7 +10,7 @@ import lesson2.task2.daysInMonth
 // Вместе с предыдущими уроками (пять лучших, 2-6) = 40/54
 
 fun main() {
-    println(mostExpensive("+ 0; a 0"))
+    println(computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 10000))
 }
 
 /**
@@ -312,4 +312,54 @@ fun fromRoman(roman: String): Int = TODO()
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    if (commands.contains(Regex("""[^<>+\- \[\]]"""))) throw java.lang.IllegalArgumentException()
+
+    var countOpeningBracket = 0
+    var countClosingBracket = 0
+    for (x in commands) {
+        if (x == '[')
+            countOpeningBracket++
+        if (x == ']')
+            if (countOpeningBracket > 0)
+                countClosingBracket++
+            else
+                throw java.lang.IllegalArgumentException()
+    }
+    if (countClosingBracket != countOpeningBracket) throw java.lang.IllegalArgumentException()
+
+    val conveyor = MutableList(cells) { 0 }
+    var currentCell = cells / 2
+    var currentCommand = 0
+    var done = 0
+    val bracketsIndexes = MutableList(commands.length) { 0 }
+    var bracketCounter = 0
+
+    while (currentCommand != commands.length && done != limit) {
+        if (currentCell < 0 || currentCell >= cells) throw java.lang.IllegalStateException()
+        when (commands[currentCommand]) {
+            '>' -> currentCell++
+            '<' -> currentCell--
+            '+' -> conveyor[currentCell]++
+            '-' -> conveyor[currentCell]--
+            '[' -> {
+                bracketCounter++
+                if (conveyor[currentCell] == 0) {
+                    val x = bracketCounter
+                    bracketsIndexes[bracketCounter] = currentCommand
+                    while (bracketCounter >= x) {
+                        currentCommand++
+                        if (commands[currentCommand] == '[') bracketCounter++
+                        if (commands[currentCommand] == ']') bracketCounter--
+                    }
+                } else bracketsIndexes[bracketCounter] = currentCommand
+            }
+            ']' -> if (conveyor[currentCell] == 0)
+                bracketCounter--
+            else currentCommand = bracketsIndexes[bracketCounter]
+        }
+        currentCommand++
+        done++
+    }
+    return conveyor
+}
