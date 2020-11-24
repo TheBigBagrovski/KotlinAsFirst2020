@@ -9,10 +9,6 @@ import lesson2.task2.daysInMonth
 // Рекомендуемое количество баллов = 11
 // Вместе с предыдущими уроками (пять лучших, 2-6) = 40/54
 
-fun main() {
-    println(computeDeviceCells(1, "<", 500))
-}
-
 /**
  * Пример
  *
