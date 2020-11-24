@@ -10,7 +10,7 @@ import lesson2.task2.daysInMonth
 // Вместе с предыдущими уроками (пять лучших, 2-6) = 40/54
 
 fun main() {
-    println(computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 10000))
+    println(computeDeviceCells(1, "<", 500))
 }
 
 /**
@@ -336,7 +336,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     var bracketCounter = 0
 
     while (currentCommand != commands.length && done != limit) {
-        if (currentCell < 0 || currentCell >= cells) throw java.lang.IllegalStateException()
         when (commands[currentCommand]) {
             '>' -> currentCell++
             '<' -> currentCell--
@@ -360,6 +359,7 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         }
         currentCommand++
         done++
+        if (currentCell < 0 || currentCell >= cells) throw java.lang.IllegalStateException()
     }
     return conveyor
 }
