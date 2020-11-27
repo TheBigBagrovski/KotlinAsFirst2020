@@ -489,54 +489,66 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
 
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val writer = File(outputName).bufferedWriter()
+    var firstDividend = "0"
+    fun writeSpaces(numberOfSpaces: Int) {       //отдельная функция чтобы писать пробелы, не загромождать код циклами
+        for (i in 1..numberOfSpaces) writer.write(" ")
+    }
+    fun writeDashes(numberOfDashes: Int) {       //то же для тире
+        for (i in 1..numberOfDashes) writer.write("-")
+    }
+    if (lhv < rhv)                       //выбираем первое число из lhv, чтобы оно делилось на rhv
+        firstDividend = lhv.toString()   //но если lhv меньше rhv, то такое число выбрать не удастся, оставляем lhv
+    else {
+        var j = 1                        //счетчиком j постепенно увеличиваем подстроку из lhv, получаем первое делимое
+        while (firstDividend.toInt() < rhv) {
+            firstDividend = lhv.toString().substring(0, j)
+            j++
+        }
+    }
+    var dashNumber = (firstDividend.toInt() / rhv * rhv).toString().length + 1
+    var remainder = firstDividend.toInt() - firstDividend.toInt() / rhv * rhv
+    //remainder в течение программы играет роль остатка от деления или вычитаемого
+    var spaceNumber = 0
+    var remainNumber = lhv.toString().removeRange(0, firstDividend.length)
+    // remainNumber - число, оставшееся от lhv после первого вычитания, из него будут опускаться цифры
+    //начало заполнения файла
     writer.write(" $lhv | $rhv")
-    var j = 1
-    var num = "0"
-    if (lhv < rhv)
-        num = lhv.toString()
-    else while (num.toInt() < rhv) {
-        num = lhv.toString().substring(0, j)
-        j++
-    }
-    fun writeSpaces(number: Int) {
-        for (i in 1..number) writer.write(" ")
-    }
     writer.newLine()
-    writer.write("-${num.toInt() / rhv * rhv}")
-    for (i in 1..lhv.toString().length - num.length + 3) writer.write(" ")
+    writer.write("-${firstDividend.toInt() / rhv * rhv}")
+    writeSpaces(lhv.toString().length - firstDividend.length + 3)
     writer.write((lhv / rhv).toString())
     writer.newLine()
-    var numDefis: Int
-    numDefis = (num.toInt() / rhv * rhv).toString().length + 1
-    for (i in 1..numDefis) writer.write("-")
-    var remainder = num.toInt() - num.toInt() / rhv * rhv
-    var spaceCounter = (num.toInt() / rhv * rhv).toString().length + 1 - remainder.toString().length
-    var number = lhv.toString().removeRange(0, num.length)
+    writeDashes(dashNumber)
     writer.newLine()
-    while (number != "") {
-        writeSpaces(spaceCounter)
-        writer.write("$remainder")
-        val xStr = remainder.toString() + number.first()
-        val x = remainder * 10 + number.first().toInt() - 48
-        writer.write("${number.first()}")
-        number = number.removeRange(0, 1)
+    while (remainNumber != "") {
+        spaceNumber += dashNumber - remainder.toString().length
+        writeSpaces(spaceNumber)
+        val minuend = remainder * 10 + remainNumber.first().toInt() - 48 //вычитаемое
+        val minuendStr = remainder.toString() + remainNumber.first()
+        //вычитаемое, но в виде строки для случая с остатком 0 (как в тестовой функции)
+        writer.write(minuendStr)  //к остатку опускается число
+        remainNumber = remainNumber.removeRange(0, 1)
         writer.newLine()
-        remainder = x / rhv * rhv
-        spaceCounter = spaceCounter + xStr.length - 1 - remainder.toString().length
-        writeSpaces(spaceCounter)
+        remainder = minuend / rhv * rhv  //то, что было остатком становится вычитаемым
+        spaceNumber += minuendStr.length - 1 - remainder.toString().length
+        writeSpaces(spaceNumber)
         writer.write("-$remainder")
         writer.newLine()
-        writeSpaces(spaceCounter)
-        numDefis = if (remainder.toString().length + 1 > (x - x / rhv * rhv).toString().length)
-            remainder.toString().length + 1
-        else (x - x / rhv * rhv).toString().length
-        for (i in 1..numDefis) writer.write("-")
-        remainder = x - x / rhv * rhv
+        dashNumber = remainder.toString().length + 1
+        if (remainNumber == "")
+            if (remainder.toString().length + 1 > (minuend - minuend / rhv * rhv).toString().length)
+                dashNumber = remainder.toString().length + 1
+            else {
+                dashNumber = (minuend - minuend / rhv * rhv).toString().length
+                spaceNumber = remainder.toString().length + 1
+            }
+        writeSpaces(spaceNumber)
+        writeDashes(dashNumber)
+        remainder = minuend - minuend / rhv * rhv
         writer.newLine()
-        spaceCounter = spaceCounter + numDefis - remainder.toString().length
     }
-    writeSpaces(spaceCounter)
+    spaceNumber += dashNumber - remainder.toString().length
+    writeSpaces(spaceNumber)
     writer.write(remainder.toString())
     writer.close()
 }
-
