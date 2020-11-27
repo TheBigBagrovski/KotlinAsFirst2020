@@ -256,6 +256,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
         if (checkChaotic(word))
             if (word.length > maxLength) {
                 maxLength = word.length
+                answer.clear()
                 answer += word
             } else if (word.length == maxLength) answer += word
 
