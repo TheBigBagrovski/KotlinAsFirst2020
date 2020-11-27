@@ -544,14 +544,12 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         writeSpaces(spaceNumber)
         writer.write("-$remainder")
         writer.newLine()
-        dashNumber = remainder.toString().length + 1
-        if (remainNumber == "")
-            if (remainder.toString().length + 1 > (minuend - minuend / rhv * rhv).toString().length)
-                dashNumber = remainder.toString().length + 1
-            else {
-                dashNumber = (minuend - minuend / rhv * rhv).toString().length
-                spaceNumber += 1 + remainder.toString().length - (minuend - remainder).toString().length
-            }
+        if (remainder.toString().length + 1 > (minuend - minuend / rhv * rhv).toString().length)
+            dashNumber = remainder.toString().length + 1
+        else {
+            dashNumber = (minuend - minuend / rhv * rhv).toString().length
+            spaceNumber += 1 + remainder.toString().length - (minuend - remainder).toString().length
+        }
         writeSpaces(spaceNumber)
         writeDashes(dashNumber)
         remainder = minuend - minuend / rhv * rhv
