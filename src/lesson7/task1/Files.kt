@@ -493,6 +493,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     fun writeSpaces(numberOfSpaces: Int) {       //отдельная функция чтобы писать пробелы, не загромождать код циклами
         for (i in 1..numberOfSpaces) writer.write(" ")
     }
+
     fun writeDashes(numberOfDashes: Int) {       //то же для тире
         for (i in 1..numberOfDashes) writer.write("-")
     }
@@ -505,20 +506,29 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             j++
         }
     }
-    var dashNumber = (firstDividend.toInt() / rhv * rhv).toString().length + 1
+    var dashNumber: Int
     var remainder = firstDividend.toInt() - firstDividend.toInt() / rhv * rhv
     //remainder в течение программы играет роль остатка от деления или вычитаемого
     var spaceNumber = 0
     var remainNumber = lhv.toString().removeRange(0, firstDividend.length)
     // remainNumber - число, оставшееся от lhv после первого вычитания, из него будут опускаться цифры
     //начало заполнения файла
-    writer.write(" $lhv | $rhv")
+    if (firstDividend.length >= (firstDividend.toInt() / rhv * rhv).toString().length + 1) {
+        writer.write("$lhv | $rhv")
+        spaceNumber = firstDividend.length - (firstDividend.toInt() / rhv * rhv).toString().length - 1
+    } else writer.write(" $lhv | $rhv")
     writer.newLine()
+    writeSpaces(spaceNumber)
     writer.write("-${firstDividend.toInt() / rhv * rhv}")
     writeSpaces(lhv.toString().length - firstDividend.length + 3)
     writer.write((lhv / rhv).toString())
     writer.newLine()
+    dashNumber =
+        if ((firstDividend.toInt() / rhv * rhv).toString().length + 1 > firstDividend.length - (firstDividend.toInt() / rhv * rhv).toString().length)
+            (firstDividend.toInt() / rhv * rhv).toString().length + 1
+        else (firstDividend.toInt() - firstDividend.toInt() / rhv * rhv).toString().length
     writeDashes(dashNumber)
+    spaceNumber = 0
     writer.newLine()
     while (remainNumber != "") {
         spaceNumber += dashNumber - remainder.toString().length
