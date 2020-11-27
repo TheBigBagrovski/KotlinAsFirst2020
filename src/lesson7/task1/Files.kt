@@ -317,6 +317,10 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     TODO()
+    /*
+    val writer = File(outputName).bufferedWriter()
+    writer.write("<html><body><p>")
+    for ()*/
 }
 
 /**
@@ -482,7 +486,55 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  *
  */
+
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    writer.write(" $lhv | $rhv")
+    var j = 1
+    var num = "0"
+    if (lhv < rhv)
+        num = lhv.toString()
+    else while (num.toInt() < rhv) {
+        num = lhv.toString().substring(0, j)
+        j++
+    }
+    fun writeSpaces(number: Int) {
+        for (i in 1..number) writer.write(" ")
+    }
+    writer.newLine()
+    writer.write("-${num.toInt() / rhv * rhv}")
+    for (i in 1..lhv.toString().length - num.length + 3) writer.write(" ")
+    writer.write((lhv / rhv).toString())
+    writer.newLine()
+    var numDefis: Int
+    numDefis = (num.toInt() / rhv * rhv).toString().length + 1
+    for (i in 1..numDefis) writer.write("-")
+    var remainder = num.toInt() - num.toInt() / rhv * rhv
+    var spaceCounter = (num.toInt() / rhv * rhv).toString().length + 1 - remainder.toString().length
+    var number = lhv.toString().removeRange(0, num.length)
+    writer.newLine()
+    while (number != "") {
+        writeSpaces(spaceCounter)
+        writer.write("$remainder")
+        val xStr = remainder.toString() + number.first()
+        val x = remainder * 10 + number.first().toInt() - 48
+        writer.write("${number.first()}")
+        number = number.removeRange(0, 1)
+        writer.newLine()
+        remainder = x / rhv * rhv
+        spaceCounter = spaceCounter + xStr.toString().length - 1 - remainder.toString().length
+        writeSpaces(spaceCounter)
+        writer.write("-$remainder")
+        writer.newLine()
+        writeSpaces(spaceCounter)
+        numDefis = remainder.toString().length + 1
+        for (i in 1..remainder.toString().length + 1) writer.write("-")
+        remainder = x - x / rhv * rhv
+        writer.newLine()
+        spaceCounter = spaceCounter + numDefis - remainder.toString().length
+    }
+    writeSpaces(spaceCounter)
+    writer.write(remainder.toString())
+    writer.close()
 }
 
