@@ -527,8 +527,10 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         writer.write("-$remainder")
         writer.newLine()
         writeSpaces(spaceCounter)
-        numDefis = remainder.toString().length + 1
-        for (i in 1..remainder.toString().length + 1) writer.write("-")
+        numDefis = if (remainder.toString().length + 1 > (x - x / rhv * rhv).toString().length)
+            remainder.toString().length + 1
+        else (x - x / rhv * rhv).toString().length
+        for (i in 1..numDefis) writer.write("-")
         remainder = x - x / rhv * rhv
         writer.newLine()
         spaceCounter = spaceCounter + numDefis - remainder.toString().length
