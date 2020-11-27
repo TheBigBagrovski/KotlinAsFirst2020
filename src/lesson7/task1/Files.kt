@@ -540,7 +540,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                 dashNumber = remainder.toString().length + 1
             else {
                 dashNumber = (minuend - minuend / rhv * rhv).toString().length
-                spaceNumber = remainder.toString().length + 1
+                spaceNumber += 1 + remainder.toString().length - (minuend - remainder).toString().length
             }
         writeSpaces(spaceNumber)
         writeDashes(dashNumber)
