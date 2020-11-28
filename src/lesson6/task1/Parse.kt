@@ -311,19 +311,15 @@ fun fromRoman(roman: String): Int = TODO()
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (commands.contains(Regex("""[^<>+\- \[\]]"""))) throw java.lang.IllegalArgumentException()
 
-    var countOpeningBracket = 0
-    var countClosingBracket = 0
-    for (x in commands) {
-        if (x == '[')
-            countOpeningBracket++
-        if (x == ']')
-            if (countOpeningBracket > 0)
-                countClosingBracket++
-            else
-                throw java.lang.IllegalArgumentException()
+    var bracketsCounter = 0
+    for (command in commands) {
+        if (command == '[') bracketsCounter++
+        if (command == ']')
+            if (bracketsCounter > 0)
+                bracketsCounter--
+            else throw java.lang.IllegalArgumentException()
     }
-    if (countClosingBracket != countOpeningBracket) throw java.lang.IllegalArgumentException()
-
+    if (bracketsCounter != 0) throw java.lang.IllegalArgumentException()
     val conveyor = MutableList(cells) { 0 }
     var currentCell = cells / 2
     var currentCommand = 0
