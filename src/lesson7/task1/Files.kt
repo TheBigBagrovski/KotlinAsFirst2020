@@ -317,10 +317,6 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     TODO()
-    /*
-    val writer = File(outputName).bufferedWriter()
-    writer.write("<html><body><p>")
-    for ()*/
 }
 
 /**
@@ -421,7 +417,70 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    var currentSpaceNumber = 0
+    var prevSpaceNumber: Int
+    val tags = MutableList(21) { "" }
+    writer.write("<html><body><p>")
+    for (line in File(inputName).readLines()) {
+        prevSpaceNumber = currentSpaceNumber
+        currentSpaceNumber = 0
+        for (symbol in line) {
+            when {
+                symbol == ' ' -> currentSpaceNumber++
+                symbol == '*' -> {
+                    if (tags[currentSpaceNumber] == "") {
+                        writer.write("<ul>")
+                        tags[currentSpaceNumber] = "</ul></li>"
+                        writer.write("<li>${line.removeRange(0, currentSpaceNumber + 2)}")
+                    } else {
+                        if (currentSpaceNumber == prevSpaceNumber)
+                            writer.write("</li><li>${line.removeRange(0, currentSpaceNumber + 2)}")
+                        else if (currentSpaceNumber < prevSpaceNumber) {
+                            writer.write(
+                                "</li>${tags[prevSpaceNumber]}<li>${
+                                    line.removeRange(
+                                        0,
+                                        currentSpaceNumber + 2
+                                    )
+                                }"
+                            )
+                            tags[prevSpaceNumber] = ""
+                        }
+                    }
+                    break
+                }
+                symbol.toString().matches(Regex("""\d""")) -> {
+                    if (tags[currentSpaceNumber] == "") {
+                        writer.write("<ol>")
+                        tags[currentSpaceNumber] = "</ol></li>"
+                        writer.write("<li>${line.removeRange(0, currentSpaceNumber + 3)}")
+                    } else {
+                        if (currentSpaceNumber == prevSpaceNumber)
+                            writer.write("</li><li>${line.removeRange(0, currentSpaceNumber + 3)}")
+                        else if (currentSpaceNumber < prevSpaceNumber) {
+                            writer.write(
+                                "</li>${tags[prevSpaceNumber]}<li>${
+                                    line.removeRange(
+                                        0,
+                                        currentSpaceNumber + 3
+                                    )
+                                }"
+                            )
+                            tags[prevSpaceNumber] = ""
+                        }
+                    }
+                    break
+                }
+            }
+        }
+    }
+    writer.write("</li>")
+    for (i in 20 downTo 4)
+        writer.write(tags[i])
+    writer.write(tags[0].substring(0, 5))
+    writer.write("</p></body></html>")
+    writer.close()
 }
 
 /**
@@ -500,7 +559,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     if (lhv < rhv)                       //выбираем первое число из lhv, чтобы оно делилось на rhv
         firstDividend = lhv.toString()   //но если lhv меньше rhv, то такое число выбрать не удастся, оставляем lhv
     else {
-        var j = 1                        //счетчиком j постепенно увеличиваем подстроку из lhv, получаем первое делимое
+        var j =
+            1                        //счетчиком j постепенно увеличиваем подстроку из lhv, получаем первое делимое
         while (firstDividend.toInt() < rhv) {
             firstDividend = lhv.toString().substring(0, j)
             j++
