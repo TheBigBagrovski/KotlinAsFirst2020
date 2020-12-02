@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import java.util.*
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -411,25 +412,28 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
-    var currentSpaceNumber = 0
+    var currentSpaceNumber = -1
     val reg = Regex("""\d""")
     var currentTag = ""
     var currentClosingTag = ""
     var add = 0
     var prevSpaceNumber = 0
-    val tags = MutableList(21) { "" }
+    val tags = Stack<String>()
     writer.write("<html><body><p>")
     fun imp(line: String) {
-        if (tags[currentSpaceNumber] == "") {
-            writer.write(currentTag)
-            tags[currentSpaceNumber] = "$currentClosingTag</li>"
-            writer.write("<li>${line.removeRange(0, currentSpaceNumber + add)}")
-        } else {
-            if (currentSpaceNumber == prevSpaceNumber)
+        when {
+            currentSpaceNumber > prevSpaceNumber -> {
+                writer.write(currentTag)
+                if (!tags.empty())
+                    currentClosingTag += "</li>"
+                tags.push(currentClosingTag)
+                writer.write("<li>${line.removeRange(0, currentSpaceNumber + add)}")
+            }
+            currentSpaceNumber == prevSpaceNumber ->
                 writer.write("</li><li>${line.removeRange(0, currentSpaceNumber + add)}")
-            else if (currentSpaceNumber < prevSpaceNumber) {
-                writer.write("</li>${tags[prevSpaceNumber]}<li>${line.removeRange(0, currentSpaceNumber + add)}")
-                tags[prevSpaceNumber] = ""
+            currentSpaceNumber < prevSpaceNumber -> {
+                writer.write("</li>${tags.peek()}<li>${line.removeRange(0, currentSpaceNumber + add)}")
+                tags.pop()
             }
         }
     }
@@ -457,9 +461,10 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
         }
     }
     writer.write("</li>")
-    for (i in 20 downTo 4)
-        writer.write(tags[i])
-    writer.write(tags[0].substring(0, 5))
+    while (!tags.empty()) {
+        writer.write(tags.peek())
+        tags.pop()
+    }
     writer.write("</p></body></html>")
     writer.close()
 }
