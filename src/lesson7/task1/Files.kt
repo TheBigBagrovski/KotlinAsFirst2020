@@ -259,14 +259,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
                 answer.clear()
                 answer += word
             } else if (word.length == maxLength) answer += word
-
-    for (i in 0 until answer.size)
-        if (i == answer.size - 1)
-            writer.write(answer[i])
-        else {
-            writer.write(answer[i])
-            writer.write(", ")
-        }
+    writer.write(answer.joinToString(separator = ", "))
     writer.close()
 }
 
@@ -419,9 +412,27 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
 fun markdownToHtmlLists(inputName: String, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     var currentSpaceNumber = 0
-    var prevSpaceNumber: Int
+    val reg = Regex("""\d""")
+    var currentTag = ""
+    var currentClosingTag = ""
+    var add = 0
+    var prevSpaceNumber = 0
     val tags = MutableList(21) { "" }
     writer.write("<html><body><p>")
+    fun imp(line: String) {
+        if (tags[currentSpaceNumber] == "") {
+            writer.write(currentTag)
+            tags[currentSpaceNumber] = "$currentClosingTag</li>"
+            writer.write("<li>${line.removeRange(0, currentSpaceNumber + add)}")
+        } else {
+            if (currentSpaceNumber == prevSpaceNumber)
+                writer.write("</li><li>${line.removeRange(0, currentSpaceNumber + add)}")
+            else if (currentSpaceNumber < prevSpaceNumber) {
+                writer.write("</li>${tags[prevSpaceNumber]}<li>${line.removeRange(0, currentSpaceNumber + add)}")
+                tags[prevSpaceNumber] = ""
+            }
+        }
+    }
     for (line in File(inputName).readLines()) {
         prevSpaceNumber = currentSpaceNumber
         currentSpaceNumber = 0
@@ -429,47 +440,17 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
             when {
                 symbol == ' ' -> currentSpaceNumber++
                 symbol == '*' -> {
-                    if (tags[currentSpaceNumber] == "") {
-                        writer.write("<ul>")
-                        tags[currentSpaceNumber] = "</ul></li>"
-                        writer.write("<li>${line.removeRange(0, currentSpaceNumber + 2)}")
-                    } else {
-                        if (currentSpaceNumber == prevSpaceNumber)
-                            writer.write("</li><li>${line.removeRange(0, currentSpaceNumber + 2)}")
-                        else if (currentSpaceNumber < prevSpaceNumber) {
-                            writer.write(
-                                "</li>${tags[prevSpaceNumber]}<li>${
-                                    line.removeRange(
-                                        0,
-                                        currentSpaceNumber + 2
-                                    )
-                                }"
-                            )
-                            tags[prevSpaceNumber] = ""
-                        }
-                    }
+                    currentTag = "<ul>"
+                    currentClosingTag = "</ul>"
+                    add = 2
+                    imp(line)
                     break
                 }
-                symbol.toString().matches(Regex("""\d""")) -> {
-                    if (tags[currentSpaceNumber] == "") {
-                        writer.write("<ol>")
-                        tags[currentSpaceNumber] = "</ol></li>"
-                        writer.write("<li>${line.removeRange(0, currentSpaceNumber + 3)}")
-                    } else {
-                        if (currentSpaceNumber == prevSpaceNumber)
-                            writer.write("</li><li>${line.removeRange(0, currentSpaceNumber + 3)}")
-                        else if (currentSpaceNumber < prevSpaceNumber) {
-                            writer.write(
-                                "</li>${tags[prevSpaceNumber]}<li>${
-                                    line.removeRange(
-                                        0,
-                                        currentSpaceNumber + 3
-                                    )
-                                }"
-                            )
-                            tags[prevSpaceNumber] = ""
-                        }
-                    }
+                symbol.toString().matches(reg) -> {
+                    currentTag = "<ol>"
+                    currentClosingTag = "</ol>"
+                    add = 3
+                    imp(line)
                     break
                 }
             }
@@ -549,12 +530,12 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val writer = File(outputName).bufferedWriter()
     var firstDividend = "0"
-    fun writeSpaces(numberOfSpaces: Int) {       //отдельная функция чтобы писать пробелы, не загромождать код циклами
-        for (i in 1..numberOfSpaces) writer.write(" ")
+    fun writeSpaces(numberOfSpaces: Int) {
+        repeat(numberOfSpaces) { writer.write(" ") }
     }
 
-    fun writeDashes(numberOfDashes: Int) {       //то же для тире
-        for (i in 1..numberOfDashes) writer.write("-")
+    fun writeDashes(numberOfDashes: Int) {
+        repeat(numberOfDashes) { writer.write("-") }
     }
     if (lhv < rhv)                       //выбираем первое число из lhv, чтобы оно делилось на rhv
         firstDividend = lhv.toString()   //но если lhv меньше rhv, то такое число выбрать не удастся, оставляем lhv
