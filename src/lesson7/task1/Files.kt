@@ -537,7 +537,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     var firstDividend = lhv
     if (firstDividend > rhv) {
         var j = 1
-        while (firstDividend / j / 10 > rhv)
+        while (firstDividend / j / 10 >= rhv)
             j *= 10
         firstDividend /= j
     }
