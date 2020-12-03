@@ -534,51 +534,40 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
 
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val writer = File(outputName).bufferedWriter()
-    var firstDividend = "0"
-    fun writeSpaces(numberOfSpaces: Int) {
-        repeat(numberOfSpaces) { writer.write(" ") }
-    }
-
-    fun writeDashes(numberOfDashes: Int) {
-        repeat(numberOfDashes) { writer.write("-") }
-    }
-    if (lhv < rhv)                       //выбираем первое число из lhv, чтобы оно делилось на rhv
-        firstDividend = lhv.toString()   //но если lhv меньше rhv, то такое число выбрать не удастся, оставляем lhv
-    else {
-        var j =
-            1                        //счетчиком j постепенно увеличиваем подстроку из lhv, получаем первое делимое
-        while (firstDividend.toInt() < rhv) {
-            firstDividend = lhv.toString().substring(0, j)
-            j++
-        }
+    var firstDividend = lhv
+    if (firstDividend > rhv) {
+        var j = 1
+        while (firstDividend / j / 10 > rhv)
+            j *= 10
+        firstDividend /= j
     }
     var dashNumber: Int
-    var remainder = firstDividend.toInt() - firstDividend.toInt() / rhv * rhv
+    var remainder = firstDividend - firstDividend / rhv * rhv
     //remainder в течение программы играет роль остатка от деления или вычитаемого
     var spaceNumber = 0
-    var remainNumber = lhv.toString().removeRange(0, firstDividend.length)
+    var remainNumber = lhv.toString().removeRange(0, firstDividend.toString().length)
     // remainNumber - число, оставшееся от lhv после первого вычитания, из него будут опускаться цифры
     //начало заполнения файла
-    if (firstDividend.length >= (firstDividend.toInt() / rhv * rhv).toString().length + 1) {
+    if (firstDividend.toString().length >= (firstDividend / rhv * rhv).toString().length + 1) {
         writer.write("$lhv | $rhv")
-        spaceNumber = firstDividend.length - (firstDividend.toInt() / rhv * rhv).toString().length - 1
+        spaceNumber = firstDividend.toString().length - (firstDividend / rhv * rhv).toString().length - 1
     } else writer.write(" $lhv | $rhv")
     writer.newLine()
-    writeSpaces(spaceNumber)
-    writer.write("-${firstDividend.toInt() / rhv * rhv}")
-    writeSpaces(lhv.toString().length - firstDividend.length + 3)
+    writer.write(" ".repeat(spaceNumber))
+    writer.write("-${firstDividend / rhv * rhv}")
+    writer.write(" ".repeat(lhv.toString().length - firstDividend.toString().length + 3))
     writer.write((lhv / rhv).toString())
     writer.newLine()
     dashNumber =
-        if ((firstDividend.toInt() / rhv * rhv).toString().length + 1 > firstDividend.length - (firstDividend.toInt() / rhv * rhv).toString().length)
-            (firstDividend.toInt() / rhv * rhv).toString().length + 1
-        else (firstDividend.toInt() - firstDividend.toInt() / rhv * rhv).toString().length
-    writeDashes(dashNumber)
+        if ((firstDividend / rhv * rhv).toString().length + 1 > firstDividend.toString().length - (firstDividend / rhv * rhv).toString().length)
+            (firstDividend / rhv * rhv).toString().length + 1
+        else (firstDividend - firstDividend / rhv * rhv).toString().length
+    writer.write("-".repeat(dashNumber))
     spaceNumber = 0
     writer.newLine()
     while (remainNumber != "") {
         spaceNumber += dashNumber - remainder.toString().length
-        writeSpaces(spaceNumber)
+        writer.write(" ".repeat(spaceNumber))
         val minuend = remainder * 10 + remainNumber.first().toInt() - 48 //вычитаемое
         val minuendStr = remainder.toString() + remainNumber.first()
         //вычитаемое, но в виде строки для случая с остатком 0 (как в тестовой функции)
@@ -587,7 +576,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         writer.newLine()
         remainder = minuend / rhv * rhv  //то, что было остатком становится вычитаемым
         spaceNumber += minuendStr.length - 1 - remainder.toString().length
-        writeSpaces(spaceNumber)
+        writer.write(" ".repeat(spaceNumber))
         writer.write("-$remainder")
         writer.newLine()
         if (remainder.toString().length + 1 > (minuend - minuend / rhv * rhv).toString().length)
@@ -596,13 +585,13 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             dashNumber = (minuend - minuend / rhv * rhv).toString().length
             spaceNumber += 1 + remainder.toString().length - (minuend - remainder).toString().length
         }
-        writeSpaces(spaceNumber)
-        writeDashes(dashNumber)
+        writer.write(" ".repeat(spaceNumber))
+        writer.write("-".repeat(dashNumber))
         remainder = minuend - minuend / rhv * rhv
         writer.newLine()
     }
     spaceNumber += dashNumber - remainder.toString().length
-    writeSpaces(spaceNumber)
+    writer.write(" ".repeat(spaceNumber))
     writer.write(remainder.toString())
     writer.close()
 }
