@@ -141,8 +141,8 @@ class Line private constructor(val b: Double, val angle: Double) {
      * Для этого необходимо составить и решить систему из двух уравнений (каждое для своей прямой)
      */
     fun crossPoint(other: Line): Point {
-        if (angle == PI / 2) return Point(-b, b * tan(other.angle) + other.b)
-        if (other.angle == PI / 2) return Point(-other.b, other.b * tan(angle) + b)
+        if(angle == PI / 2) return Point(-b, -b * tan(other.angle) + other.b / cos(other.angle))
+        if(other.angle == PI / 2) return Point(-other.b, -other.b * tan(angle) + b / cos(angle))
         val x = (b / cos(angle) - other.b / cos(other.angle)) / (tan(other.angle) - tan(angle))
         val y = x * tan(angle) + b / cos(angle)
         return Point(x, y)
@@ -164,7 +164,12 @@ class Line private constructor(val b: Double, val angle: Double) {
  *
  * Построить прямую по отрезку
  */
-fun lineBySegment(s: Segment): Line = TODO()
+fun lineBySegment(s: Segment): Line {
+    var angle = atan((s.begin.y - s.end.y) / (s.begin.x - s.end.x))
+    if (angle < 0) angle += PI
+    if (angle == PI) angle = 0.0
+    return Line(s.begin, angle)
+}
 
 /**
  * Средняя (3 балла)
@@ -232,7 +237,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()/* {
+fun minContainingCircle(vararg points: Point): Circle = TODO()/*{
     if (points.isEmpty()) throw java.lang.IllegalArgumentException()
     var maxDistance = 0.0
     var diameter = Segment(points[0], points[1])
@@ -245,4 +250,15 @@ fun minContainingCircle(vararg points: Point): Circle = TODO()/* {
         }
     }
     val circle = circleByDiameter(diameter)
-} */
+    var notContainingPoints = setOf<Point>()
+    for(point in points) if(!circle.contains(point)) notContainingPoints+=point
+    if (notContainingPoints.isEmpty()) return circle
+    else {
+
+        for (point in notContainingPoints){
+            val newCircle = circleByThreePoints(diameter.begin, diameter.end, point)
+            for(pointToCheck in notContainingPoints)
+                if (!newCircle.contains(pointToCheck))
+        }
+    }
+}*/
