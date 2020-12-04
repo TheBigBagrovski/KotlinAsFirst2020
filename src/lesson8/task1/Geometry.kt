@@ -8,6 +8,10 @@ import kotlin.math.*
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
 
+fun main() {
+    println(bisectorByPoints(Point(0.0, 5e-324), Point(2.220446049250313e-16, 0.9036610426909258)))
+}
+
 /**
  * Точка на плоскости
  */
@@ -141,8 +145,8 @@ class Line private constructor(val b: Double, val angle: Double) {
      * Для этого необходимо составить и решить систему из двух уравнений (каждое для своей прямой)
      */
     fun crossPoint(other: Line): Point {
-        if(angle == PI / 2) return Point(-b, -b * tan(other.angle) + other.b / cos(other.angle))
-        if(other.angle == PI / 2) return Point(-other.b, -other.b * tan(angle) + b / cos(angle))
+        if (angle == PI / 2) return Point(-b, -b * tan(other.angle) + other.b / cos(other.angle))
+        if (other.angle == PI / 2) return Point(-other.b, -other.b * tan(angle) + b / cos(angle))
         val x = (b / cos(angle) - other.b / cos(other.angle)) / (tan(other.angle) - tan(angle))
         val y = x * tan(angle) + b / cos(angle)
         return Point(x, y)
@@ -191,7 +195,7 @@ fun lineByPoints(a: Point, b: Point): Line {
 fun bisectorByPoints(a: Point, b: Point): Line {
     val middle = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     val line = lineByPoints(a, b)
-    val angle = if (line.angle >= PI / 2.0) line.angle - PI / 2.0
+    val angle = if (line.angle + PI / 2.0 >= PI) line.angle + PI / 2.0 - PI
     else line.angle + PI / 2.0
     return Line(middle, angle)
 }
