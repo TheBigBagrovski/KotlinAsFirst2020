@@ -172,11 +172,9 @@ fun lineBySegment(s: Segment): Line = TODO()
  * Построить прямую по двум точкам
  */
 fun lineByPoints(a: Point, b: Point): Line {
-    val angle = when {
-        b.x - a.x == 0.0 -> PI / 2.0
-        atan((b.y - a.y) / (b.x - a.x)) < 0 -> atan((b.y - a.y) / (b.x - a.x)) + PI
-        else -> atan((b.y - a.y) / (b.x - a.x))
-    }
+    var angle = atan((b.y - a.y) / (b.x - a.x))
+    if (angle < 0) angle += PI
+    if (angle == PI) angle = 0.0
     return Line(a, angle)
 }
 
@@ -234,5 +232,17 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()
-
+fun minContainingCircle(vararg points: Point): Circle = TODO()/* {
+    if (points.isEmpty()) throw java.lang.IllegalArgumentException()
+    var maxDistance = 0.0
+    var diameter = Segment(points[0], points[1])
+    for (i in 0..points.size - 2) {
+        for (j in i until points.size) {
+            if (points[i].distance(points[j]) > maxDistance) {
+                maxDistance = points[i].distance(points[j])
+                diameter = Segment(points[i], points[j])
+            }
+        }
+    }
+    val circle = circleByDiameter(diameter)
+} */
