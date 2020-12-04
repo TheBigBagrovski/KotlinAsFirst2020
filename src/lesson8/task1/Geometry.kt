@@ -92,7 +92,7 @@ data class Circle(val center: Point, val radius: Double) {
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = center.distance(p) < radius
+    fun contains(p: Point): Boolean = center.distance(p) <= radius
 }
 
 /**
@@ -241,12 +241,13 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()/*{
+fun minContainingCircle(vararg points: Point): Circle {
     if (points.isEmpty()) throw java.lang.IllegalArgumentException()
+    if (points.size == 1) return Circle(points[0], 0.0)
     var maxDistance = 0.0
     var diameter = Segment(points[0], points[1])
     for (i in 0..points.size - 2) {
-        for (j in i until points.size) {
+        for (j in i + 1 until points.size) {
             if (points[i].distance(points[j]) > maxDistance) {
                 maxDistance = points[i].distance(points[j])
                 diameter = Segment(points[i], points[j])
@@ -254,15 +255,19 @@ fun minContainingCircle(vararg points: Point): Circle = TODO()/*{
         }
     }
     val circle = circleByDiameter(diameter)
-    var notContainingPoints = setOf<Point>()
-    for(point in points) if(!circle.contains(point)) notContainingPoints+=point
+    val notContainingPoints = mutableSetOf<Point>()
+    for (point in points)
+        if (!circle.contains(point))
+            notContainingPoints += point
     if (notContainingPoints.isEmpty()) return circle
     else {
-
-        for (point in notContainingPoints){
+        for (point in notContainingPoints) {
             val newCircle = circleByThreePoints(diameter.begin, diameter.end, point)
-            for(pointToCheck in notContainingPoints)
-                if (!newCircle.contains(pointToCheck))
+            for (checkingPoint in notContainingPoints)
+                if (newCircle.contains(checkingPoint)) {
+                    if (checkingPoint == notContainingPoints.last()) return newCircle
+                } else break
         }
     }
-}*/
+    return circle
+}
