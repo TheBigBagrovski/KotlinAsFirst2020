@@ -8,6 +8,24 @@ import kotlin.math.*
 // Урок 8: простые классы
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
 
+fun main() {
+    println(
+        minContainingCircle(
+            Point(-632.0, 0.07964169667639653),
+            Point(0.7426127343124546, -632.0),
+            Point(0.0, 0.23077394487950365),
+            Point(0.3091219162588529, 2.220446049250313e-16),
+            Point(0.8798469438471225, 0.7015378163440219),
+            Point(-632.0, 0.32011590124267175),
+            Point(0.8336176346946331, 0.8591058530996949),
+            Point(0.0, 0.9285164919143433),
+            Point(0.4675325143339947, -632.0),
+            Point(0.1883696590293894, 0.0),
+            Point(-5e-324, -2.220446049250313e-16)
+        )
+    )
+}
+
 /**
  * Точка на плоскости
  */
@@ -240,7 +258,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle {
+fun minContainingCircle(vararg points: Point): Circle = TODO()/*{
     if (points.isEmpty()) throw java.lang.IllegalArgumentException()
     if (points.size == 1) return Circle(points[0], 0.0)
     var maxDistance = 0.0
@@ -266,7 +284,7 @@ fun minContainingCircle(vararg points: Point): Circle {
             val newCircle = circleByThreePoints(diameter.begin, diameter.end, point)
             for (checkingPoint in notContainingPoints)
                 if (newCircle.contains(checkingPoint)) {
-                    if (checkingPoint == notContainingPoints.last())
+                    if (notContainingPoints.indexOf(checkingPoint) == notContainingPoints.size - 1)
                         if (newCircle.radius < minRadius) {
                             minRadius = newCircle.radius
                             bestCircle = newCircle
@@ -275,4 +293,4 @@ fun minContainingCircle(vararg points: Point): Circle {
         }
     }
     return bestCircle
-}
+}*/
