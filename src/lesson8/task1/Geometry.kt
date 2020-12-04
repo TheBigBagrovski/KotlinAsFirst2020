@@ -255,6 +255,8 @@ fun minContainingCircle(vararg points: Point): Circle {
     }
     val circle = circleByDiameter(diameter)
     val notContainingPoints = mutableSetOf<Point>()
+    var minRadius = Double.POSITIVE_INFINITY
+    var bestCircle = circle
     for (point in points)
         if (!circle.contains(point))
             notContainingPoints += point
@@ -264,9 +266,13 @@ fun minContainingCircle(vararg points: Point): Circle {
             val newCircle = circleByThreePoints(diameter.begin, diameter.end, point)
             for (checkingPoint in notContainingPoints)
                 if (newCircle.contains(checkingPoint)) {
-                    if (checkingPoint == notContainingPoints.last()) return newCircle
+                    if (checkingPoint == notContainingPoints.last())
+                        if (newCircle.radius < minRadius) {
+                            minRadius = newCircle.radius
+                            bestCircle = newCircle
+                        }
                 } else break
         }
     }
-    return circle
+    return bestCircle
 }
