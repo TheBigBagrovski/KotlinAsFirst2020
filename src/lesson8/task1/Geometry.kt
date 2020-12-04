@@ -9,7 +9,18 @@ import kotlin.math.*
 // Максимальное количество баллов = 40 (без очень трудных задач = 11)
 
 fun main() {
-    println(bisectorByPoints(Point(0.0, 5e-324), Point(2.220446049250313e-16, 0.9036610426909258)))
+    println(
+        minContainingCircle(
+            Point(0.5288106551924878, -5e-324),
+            Point(0.8168905927532786, -632.0),
+            Point(0.03348278244941694, 0.6946866156835779),
+            Point(-632.0, 0.031030886631048138),
+            Point(0.6990179480012704, 0.615123063926689),
+            Point(0.21900029255485198, 0.043390286975627856),
+            Point(0.9530392836335257, -5e-324),
+            Point(0.013624048380403875, 0.7008689248821461)
+        )
+    )
 }
 
 /**
@@ -193,7 +204,7 @@ fun lineByPoints(a: Point, b: Point): Line {
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
-    val middle = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
+    val middle = Point((a.x + b.x) / 2.0, (a.y + b.y) / 2.0)
     val line = lineByPoints(a, b)
     val angle = if (line.angle + PI / 2.0 >= PI) line.angle + PI / 2.0 - PI
     else line.angle + PI / 2.0
@@ -224,6 +235,9 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
+    if (a == b) return circleByDiameter(Segment(a, b))
+    if (a == c) return circleByDiameter(Segment(a, c))
+    if (c == b) return circleByDiameter(Segment(c, b))
     val line1 = bisectorByPoints(a, b)
     val line2 = bisectorByPoints(b, c)
     val centralPoint = line1.crossPoint(line2)
