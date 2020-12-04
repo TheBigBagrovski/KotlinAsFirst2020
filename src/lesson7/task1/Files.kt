@@ -595,3 +595,28 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     writer.write(remainder.toString())
     writer.close()
 }
+
+/* -------------Индивидуальное задание-------------------*/
+fun robot(inputName: String, commands: String): Pair<Int, Int> {
+    val height = File(inputName).readLines().size
+    val width = File(inputName).readLines().first().length
+    var robotX = -1
+    var robotY = -1
+    val labyrinth: Array<Array<Char>> = Array(height) { Array(width) { ' ' } }
+    for (i in 0 until height)
+        for (j in 0 until width) {
+            labyrinth[i][j] = File(inputName).readLines()[i][j]
+            if (File(inputName).readLines()[i][j] == '*') {
+                robotY = i
+                robotX = j
+            }
+        }
+    for (i in commands.indices)
+        when (commands[i]) {
+            'd' -> if (robotY != height - 1 && labyrinth[robotY + 1][robotX] != '#') robotY++
+            'u' -> if (robotY != 0 && labyrinth[robotY - 1][robotX] != '#') robotY--
+            'l' -> if (robotX != 0 && labyrinth[robotY][robotX - 1] != '#') robotX--
+            'r' -> if (robotX != width - 1 && labyrinth[robotY][robotX + 1] != '#') robotX++
+        }
+    return (robotX to robotY)
+}

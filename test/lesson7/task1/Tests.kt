@@ -496,4 +496,25 @@ Basic, Ruby, Swift.
 
         File("temp.txt").delete()
     }
+
+
+    /*------------------Тесты к индивидуальному заданию-------------------*/
+    @Test
+    fun robot() {
+        assertEquals(
+            Pair(0, 0), robot("input/robot5.txt", "ludrlurdlrudldruldruldurlurdldrurdrudlrudllrudldrul")
+        )
+        assertEquals(
+            Pair(4, 4), robot("input/robot4.txt", "ludrlurdlrudldruldruldurlurdldrurdrudlrudllrudldrul")
+        )
+        assertEquals(
+            Pair(0, 6), robot("input/robot3.txt", "dlrdlrdldrldrlrldlrdlrdlrdllrduuu")
+        )
+        assertEquals(
+            Pair(3, 0), robot("input/robot2.txt", "druurdurdurdurdudrudruudrudrurdudrurddllll")
+        )
+        assertEquals(
+            Pair(0, 0), robot("input/robot1.txt", "llllllluuuurrrrruuurrrruuuulluuuuuuuuuruulllllllllllllllllll")
+        )
+    }
 }
