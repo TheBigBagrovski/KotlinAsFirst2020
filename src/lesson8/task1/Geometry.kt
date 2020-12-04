@@ -186,7 +186,7 @@ fun lineByPoints(a: Point, b: Point): Line {
 fun bisectorByPoints(a: Point, b: Point): Line {
     val middle = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     val line = lineByPoints(a, b)
-    val angle = if (line.angle + PI / 2.0 >= PI) line.angle + PI / 2.0 - PI
+    val angle = if (line.angle >= PI / 2.0) line.angle - PI / 2.0
     else line.angle + PI / 2.0
     return Line(middle, angle)
 }
