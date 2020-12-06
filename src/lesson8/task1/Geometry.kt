@@ -97,9 +97,11 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    fun distance(other: Circle): Double =
-        if (center.distance(other.center) - radius - other.radius > 0) center.distance(other.center) - radius - other.radius
+    fun distance(other: Circle): Double {
+        val distance = center.distance(other.center) - radius - other.radius
+        return if (distance > 0) distance
         else 0.0
+    }
 
     /**
      * Тривиальная (1 балл)
@@ -182,12 +184,7 @@ class Line private constructor(val b: Double, val angle: Double) {
  *
  * Построить прямую по отрезку
  */
-fun lineBySegment(s: Segment): Line {
-    var angle = atan((s.begin.y - s.end.y) / (s.begin.x - s.end.x))
-    if (angle < 0) angle += PI
-    if (angle == PI) angle = 0.0
-    return Line(s.begin, angle)
-}
+fun lineBySegment(s: Segment): Line = lineByPoints(s.begin, s.end)
 
 /**
  * Средняя (3 балла)
@@ -258,39 +255,4 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()/*{
-    if (points.isEmpty()) throw java.lang.IllegalArgumentException()
-    if (points.size == 1) return Circle(points[0], 0.0)
-    var maxDistance = 0.0
-    var diameter = Segment(points[0], points[1])
-    for (i in 0..points.size - 2) {
-        for (j in i + 1 until points.size) {
-            if (points[i].distance(points[j]) > maxDistance) {
-                maxDistance = points[i].distance(points[j])
-                diameter = Segment(points[i], points[j])
-            }
-        }
-    }
-    val circle = circleByDiameter(diameter)
-    val notContainingPoints = mutableSetOf<Point>()
-    var minRadius = Double.POSITIVE_INFINITY
-    var bestCircle = circle
-    for (point in points)
-        if (!circle.contains(point))
-            notContainingPoints += point
-    if (notContainingPoints.isEmpty()) return circle
-    else {
-        for (point in notContainingPoints) {
-            val newCircle = circleByThreePoints(diameter.begin, diameter.end, point)
-            for (checkingPoint in notContainingPoints)
-                if (newCircle.contains(checkingPoint)) {
-                    if (notContainingPoints.indexOf(checkingPoint) == notContainingPoints.size - 1)
-                        if (newCircle.radius < minRadius) {
-                            minRadius = newCircle.radius
-                            bestCircle = newCircle
-                        }
-                } else break
-        }
-    }
-    return bestCircle
-}*/
+fun minContainingCircle(vararg points: Point): Circle = TODO()

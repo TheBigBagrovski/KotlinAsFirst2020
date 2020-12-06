@@ -595,7 +595,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     writer.write(remainder.toString())
     writer.close()
 }
-
+/*
 /* -------------Индивидуальное задание-------------------*/
 fun robot(inputName: String, commands: String): Pair<Int, Int> {
     val height = File(inputName).readLines().size
@@ -619,4 +619,4 @@ fun robot(inputName: String, commands: String): Pair<Int, Int> {
             'r' -> if (robotX != width - 1 && labyrinth[robotY][robotX + 1] != '#') robotX++
         }
     return (robotX to robotY)
-}
+}*/

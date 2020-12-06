@@ -497,7 +497,7 @@ Basic, Ruby, Swift.
         File("temp.txt").delete()
     }
 
-
+/*
     /*------------------Тесты к индивидуальному заданию-------------------*/
     @Test
     fun robot() {
@@ -516,5 +516,5 @@ Basic, Ruby, Swift.
         assertEquals(
             Pair(0, 0), robot("input/robot1.txt", "llllllluuuurrrrruuurrrruuuulluuuuuuuuuruulllllllllllllllllll")
         )
-    }
+    }*/
 }
